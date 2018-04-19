@@ -1,7 +1,6 @@
 package user;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import entity.AuthInfEntity;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -21,7 +20,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 @WebServlet(urlPatterns = "/registration")
@@ -107,9 +105,4 @@ public class Registration extends HttpServlet implements IParseJsonString {
         return gson.toJson(authInfoEntity);
     }
 
-    @Override
-    public List<AuthInfEntity> handleInputString(String json) {
-        return gson.fromJson(json, new TypeToken<List<AuthInfEntity>>() {
-        }.getType());
-    }
 }

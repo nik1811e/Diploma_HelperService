@@ -1,4 +1,4 @@
-<%@ page import="course.CourseHandler" %>
+<%@ page import="course.CourseInformation" %>
 <%@ page import="entity.CourseEntity" %>
 <%@ page import="util.CookieUtil" %>
 <%@ page import="java.util.List" %>
@@ -21,13 +21,15 @@
 
         String urlRedirect = "/pages/signin.jsp";
         List<CourseEntity> userCourseList = null;
+        CourseInformation courseInformation = null;
         if (cookieUtil.isFindCookie()) {
-            userCourseList = new CourseHandler().getUserCourse();
+            courseInformation = new CourseInformation(cookieUtil.getUserUuidFromToken());
+            userCourseList = courseInformation.getUserCourse();
         } else {
             response.sendRedirect(urlRedirect);
             return;
         }
-        assert userCourseList !=null;
+        assert userCourseList != null;
     %>
 
 </head>
@@ -112,36 +114,24 @@
 
         <h3 class="text-center thin"><b>Ваши курсы</b></h3>
 
-        <table class="table table-hover">
-            <thead>
-            <tr>
-                <th>Name</th>
-                <th>Action</th>
-            </tr>
-            </thead>
-            <%
-                for (int i = 0; i < userCourseList.size(); i++) {
-                    String uuid = userCourseList.get(i).getUuid();
-                    String name = userCourseList.get(i).getNameCourse();
-            %>
-            <tbody>
-            <tr>
-                <td>
-                    <div class="row">
-                        <div class="older">
-                            <div>
-                                <a href="/pages/section.jsp?uuidCourse=<%=uuid%>"><%=name%>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-            </tbody>
-            <!-- /row  -->
-            <%
-                }
-            %>
+        <div class="row">
+            <div class="older">
+                <%
+                    for (int i = 0; i < userCourseList.size(); i++) {
+                        String uuid = userCourseList.get(i).getUuid();
+                        String name = userCourseList.get(i).getNameCourse();
+                %>
+                <div>
+                    <a href="/pages/course.jsp?uuidCourse=<%=uuid%>"><%=name%>
+                    </a>
+                </div>
+                <%
+                    }
+                %>
+            </div>
+        </div>
+        <!-- /row  -->
+
         </table>
     </div>
 </div>

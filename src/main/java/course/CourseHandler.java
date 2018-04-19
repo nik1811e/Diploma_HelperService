@@ -18,7 +18,6 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @WebServlet(urlPatterns = "/coursehandler")
@@ -34,6 +33,10 @@ public class CourseHandler extends HttpServlet implements Serializable {
     private Gson gson = new Gson();
 
     public CourseHandler() {
+
+    }
+
+    public CourseHandler(String uuidAuth) {
 
     }
 
@@ -126,21 +129,6 @@ public class CourseHandler extends HttpServlet implements Serializable {
                 "}";
     }
 
-    public List<CourseEntity> getUserCourse() {
-        logger.debug(getClass().getName() + "getUserCourse");
-        session = HibernateUtil.getSessionFactory().openSession();
-        session.beginTransaction();
-        try {
-            return session.createQuery("SELECT c FROM " + VariablesUtil.ENTITY_COURSE + " c WHERE c.authById =: idAuth",
-                    CourseEntity.class).setParameter("idAuth", idAuth).getResultList();
-        } catch (Exception ex) {
-            logger.error(ex.getLocalizedMessage());
-        } finally {
-            if (session != null && session.isOpen()) {
-                session.close();
-            }
-        }
-        return null;
-    }
+
 
 }

@@ -35,7 +35,7 @@ public class CookieUtil {
     public boolean isAdmin(Cookie[] cookies) throws UnsupportedEncodingException {
         for (Cookie cooky : cookies) {
             if ((cooky.getName().equals(VariablesUtil.COOKIE_AUTH_NAME))
-                    && (getRoleFromToken().equalsIgnoreCase(VariablesUtil.ROLE_ADMIN))) ;
+                    && (getRoleFromToken().equalsIgnoreCase(VariablesUtil.ROLE_ADMIN)))
             return true;
         }
         return false;

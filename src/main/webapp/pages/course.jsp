@@ -1,3 +1,9 @@
+<%@ page import="course.SectionInformation" %>
+<%@ page import="course.to.SectionTO" %>
+<%@ page import="util.CookieUtil" %>
+<%@ page import="util.MailUtil" %>
+<%@ page import="java.util.Arrays" %>
+<%@ page import="java.util.List" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -17,26 +23,17 @@
     <script src="/resources/userPages/js/html5shiv.js"></script>
     <script src="/resources/userPages/js/respond.min.js"></script>
 
-    <%--   <%
-           CookieUtil cookieUtil = new CookieUtil(request);
-           CourseInformation courseInformation = null;
+    <%
+        CookieUtil cookieUtil = new CookieUtil(request);
+        List<SectionTO> sectionTOList = null;
+        try {
+            sectionTOList = new SectionInformation().getCourseSection(request.getParameter("uuidCourse"));
+        } catch (Exception ex) {
+            new MailUtil().sendErrorMailForAdmin(getClass().getName() + "\n" + Arrays.toString(ex.getStackTrace()));
+        }
 
-           List<CourseEntity> courseInformationList = null;
-           CourseStructureTO courseStructureTO = null;
-           List<SectionTO> sectionTOList = null;
-           try {
-               courseInformation = new CourseInformation(request.getParameter("uuid"));
-               courseInformationList = courseInformation.getCourseInformationByUuid();
-               sectionTOList = courseStructureTO.getSection();
-
-           } catch (Exception ex) {
-               new MailUtil().sendErrorMailForAdmin(getClass().getName() + "\n" + Arrays.toString(ex.getStackTrace()));
-           }
-
-       %>--%>
-
+    %>
 </head>
-
 <body class="home">
 <div class="navbar navbar-inverse navbar-fixed-top headroom">
     <div class="container">
@@ -77,7 +74,8 @@
                     </div>
                     <div class="form-group">
                         <label for="uuid_course">Курс (тестовое поле)</label>
-                        <input type="text" class="form-control" id="uuid_course" name="uuid_course" required maxlength="50">
+                        <input type="text" class="form-control" id="uuid_course" name="uuid_course" required
+                               maxlength="50">
                     </div>
                     <div class="form-group">
                         <label for="description">Описание</label>
@@ -105,18 +103,18 @@
 
         <div class="row">
             <div class="older">
-                <div>
-                    <a href="#">Test</a>
-                </div>
-                <%--  <%
-                      assert courseInformationList != null;
-                      for (int i = 1; i < sectionTOList.size(); i++) {
-                          String name = sectionTOList.get(i).getName();
-                  %>--%>
+                <%
+                    assert sectionTOList != null;
+                    for (int i = 1; i < sectionTOList.size(); i++) {
+                        String id = sectionTOList.get(i).getUuidSection();
+                        String name = sectionTOList.get(i).getName();
 
-                <%-- <%
-                     }
-                 %>--%>
+                %>
+                <div>
+                    <a href="/pages/section.jsp?uuid=<%=id%>"><%=name%>
+                    </a>
+                </div>
+                <%}%>
             </div>
         </div>
 
