@@ -27,7 +27,7 @@ public class SectionHandler extends HttpServlet implements Serializable {
     private String uuidCourse;
     private String errorMessage;
     private Gson gson = new Gson();
-    private String uuidAuth;
+    private String uuidNewSection = null;
 
 
     public SectionHandler() {
@@ -37,11 +37,14 @@ public class SectionHandler extends HttpServlet implements Serializable {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         session = HibernateUtil.getSessionFactory().openSession();
         transaction = session.beginTransaction();
-        this.uuidAuth = new CookieUtil(req).getUserUuidFromToken();
-        this.uuidCourse = String.valueOf(req.getParameter("uuid_course").trim());
+        String uuidAuth = new CookieUtil(req).getUserUuidFromToken();
+        this.uuidCourse = String.valueOf(req.getParameter("uuidCourse").trim());
         try {
-            addSection(prepareAddSection(String.valueOf(req.getParameter("name").trim()),
+            boolean result = addSection(prepareAddSection(String.valueOf(req.getParameter("name").trim()),
                     uuidCourse, String.valueOf(req.getParameter("description").trim())));
+            if (result) {
+                resp.sendRedirect("/pages/section.jsp?uuidSection=" + uuidNewSection);
+            }
         } catch (Exception ex) {
             new MailUtil().sendErrorMailForAdmin(getClass().getName() + "\n" + Arrays.toString(ex.getStackTrace()));
             logger.error(ex.getStackTrace());
@@ -54,36 +57,42 @@ public class SectionHandler extends HttpServlet implements Serializable {
         List<ResourceTO> resources = new ArrayList<>();
         SectionTO sectionTO = new SectionTO();
         if (isUniqueSectionName(uuidCourse, name)) {
+            uuidNewSection = UUID.randomUUID().toString();
             sectionTO.setName(name);
             sectionTO.setUuidCourse(uuidCourse);
             sectionTO.setDescriptionSection(desc);
-            sectionTO.setUuidSection(UUID.randomUUID().toString());
+            sectionTO.setUuidSection(uuidNewSection);
             sectionTO.setDateLastUpdate(new SimpleDateFormat(VariablesUtil.PATTERN_DATE).format(new Date().getTime()));
             sectionTO.setResource(resources);
 
             sections.add(sectionTO);
             courseStructureTOgson.setSection(sections);
-        } else {
-
-
         }
         return gson.toJson(courseStructureTOgson);
     }
 
     private boolean isUniqueSectionName(String uuidCourse, String nameSection) {
-
+        List<SectionTO> sectionTOList = new SectionInformation().getCourseSection(uuidCourse);
+        for (SectionTO sn :
+                sectionTOList) {
+            if (sn.getName().equals(nameSection)) {
+                return false;
+            }
+        }
         return true;
     }
 
     @Transactional
-    private void addSection(String jsonStructure) {
+    private boolean addSection(String jsonStructure) {
         try {
             session.createQuery("UPDATE " + VariablesUtil.ENTITY_COURSE + " c SET c.structure = :newStructure WHERE c.uuid = :uuid")
                     .setParameter("newStructure", jsonStructure).setParameter("uuid", this.uuidCourse).executeUpdate();
             transaction.commit();
+            return true;
         } catch (Exception ex) {
             new MailUtil().sendErrorMailForAdmin(getClass().getName() + "\n" + Arrays.toString(ex.getStackTrace()));
             logger.error(ex.getStackTrace());
+            return false;
         } finally {
             if (session != null && session.isOpen()) {
                 session.close();

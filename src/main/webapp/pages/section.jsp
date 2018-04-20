@@ -1,3 +1,11 @@
+<%@ page import="course.ResourceInformation" %>
+<%@ page import="course.to.ResourceTO" %>
+<%@ page import="entity.ResourceCategoryEntity" %>
+<%@ page import="util.CommonUtil" %>
+<%@ page import="util.CookieUtil" %>
+<%@ page import="util.MailUtil" %>
+<%@ page import="java.util.Arrays" %>
+<%@ page import="java.util.List" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -17,23 +25,26 @@
     <script src="/resources/userPages/js/html5shiv.js"></script>
     <script src="/resources/userPages/js/respond.min.js"></script>
 
-    <%--   <%
-           CookieUtil cookieUtil = new CookieUtil(request);
-           CourseInformation courseInformation = null;
+    <%
+        CookieUtil cookieUtil = new CookieUtil(request);
+        String urlRedirect = "/pages/signin.jsp";
 
-           List<CourseEntity> courseInformationList = null;
-           CourseStructureTO courseStructureTO = null;
-           List<SectionTO> sectionTOList = null;
-           try {
-               courseInformation = new CourseInformation(request.getParameter("uuid"));
-               courseInformationList = courseInformation.getCourseInformationByUuid();
-               sectionTOList = courseStructureTO.getSection();
+        List<ResourceTO> resourceTOList = null;
+        List<ResourceCategoryEntity> resourceCategoryList = null;
+        if (cookieUtil.isFindCookie()) {
+            try {
+                resourceTOList = new ResourceInformation().getSectionResource(String.valueOf(request.getParameter("uuidSection").trim()),
+                        String.valueOf(request.getParameter("uuidCourse").trim()));
+                resourceCategoryList = CommonUtil.getResourceCategory();
+            } catch (Exception ex) {
+                new MailUtil().sendErrorMailForAdmin(getClass().getName() + "\n" + Arrays.toString(ex.getStackTrace()));
+            }
+        } else {
+            response.sendRedirect(urlRedirect);
+        }
 
-           } catch (Exception ex) {
-               new MailUtil().sendErrorMailForAdmin(getClass().getName() + "\n" + Arrays.toString(ex.getStackTrace()));
-           }
 
-       %>--%>
+    %>
 
 </head>
 
@@ -68,40 +79,62 @@
 <!-- Header -->
 <header id="head">
     <div class="container">
+
         <div class="row">
-            <div class="modal-body">
-                <form role="form" method="post" action="/resourcehandler">
-                    <div class="form-group">
-                        <label for="name_resource">Название</label>
-                        <input type="text" class="form-control" id="name_resource" name="name_resource" required maxlength="50">
+            <p><a href="#myModal2" id="btn2" class="btn btn-primary">Открыть окно добавления ссылки</a></p>
+            <div id="myModal2" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h4 class="modal-title" style="color: #3A3A3A">Добавить секцию</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form role="form" method="post" action="/resourcehandler">
+                                <input type="hidden" name="uuid_course" value="<%=request.getParameter("uuidCourse")%>">
+                                <input type="hidden" name="uuid_section" value="<%=request.getParameter("uuidSection")%>">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="name_resource" name="name_resource"
+                                           required
+                                           maxlength="50" placeholder="Название">
+                                </div>
+                                <div class="form-group">
+                                    <input type="url"
+                                           pattern="^(https?://)?([a-zA-Z0-9]([a-zA-ZäöüÄÖÜ0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$"
+                                           class="form-control" id="link" name="link" required maxlength="70"
+                                           placeholder="Ссылка на ресурс">
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="author" name="author" required
+                                           maxlength="70" placeholder="Автор ресурса">
+                                </div>
+                                <div class="form-group">
+                                    <select class="form-control" id="id_category" name="id_category">
+                                        <option value="" disabled>Выберите категорию</option>
+                                        <%
+                                            assert resourceCategoryList != null;
+                                            for (int i = 0; i < resourceCategoryList.size(); i++) {
+                                                int id = resourceCategoryList.get(i).getId();
+                                                String name = resourceCategoryList.get(i).getName();
+
+                                        %>
+                                        <option value="<%=id%>"><%=name%>
+                                        </option>
+                                        <%}%>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="desc">Описание</label>
+                                    <textarea class="form-control" type="textarea" name="desc" id="desc"
+                                              placeholder="Your Message Here" maxlength="6000" rows="7"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-lg btn-success btn-block" id="btnContactUs">
+                                    Добавить
+                                </button>
+                            </form>
+                        </div>
+
                     </div>
-                    <div class="form-group">
-                        <label for="link">Ссылка на ресурс</label>
-                        <input type="url" class="form-control" id="link" name="link" required maxlength="70">
-                    </div>
-                    <div class="form-group">
-                        <label for="author">Автор</label>
-                        <input type="text" class="form-control" id="author" name="author" required maxlength="70">
-                    </div>
-                    <div class="form-group">
-                        <label for="uuid_section">Секция (тестовое поле)</label>
-                        <input type="text" class="form-control" id="uuid_section" name="uuid_section" required maxlength="70">
-                    </div>
-                    <div class="form-group">
-                        <label for="uuid_course">Курс (тестовое поле)</label>
-                        <input type="text" class="form-control" id="uuid_course" name="uuid_course" required maxlength="70">
-                    </div>
-                    <div class="form-group">
-                        <label for="desc">Описание</label>
-                        <textarea class="form-control" type="textarea" name="desc" id="desc"
-                                  placeholder="Your Message Here" maxlength="6000" rows="7"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-lg btn-success btn-block" id="btnContactUs">Добавить</button>
-                </form>
-                <div id="success_message" style="width:100%; height:100%; display:none; "><h3>Sent your message
-                    successfully!</h3></div>
-                <div id="error_message" style="width:100%; height:100%; display:none; "><h3>Error</h3> Sorry there was
-                    an error sending your form.
                 </div>
             </div>
         </div>
@@ -113,38 +146,24 @@
 <div class="jumbotron top-space">
     <div class="container">
 
-        <h3 class="text-center thin">Reasons to use this template</h3>
+        <h3 class="text-center thin">Ресурсы раздела</h3>
 
         <div class="row">
             <div class="older">
-                <div>
-                <a href="#">Test</a>
-            </div>
-                <div>
-                    <a href="#">Test</a>
-                </div>
-                <div>
-                    <a href="#">Test</a>
-                </div>
-                <div>
-                    <a href="#">Test</a>
-                </div>
-                <div>
-                    <a href="#">Test</a>
-                </div>
+                <%
+                    assert resourceTOList != null;
+                    for (ResourceTO aResourceTOList : resourceTOList) {
+                        String uuidResource = aResourceTOList.getUuidResource();
+                        String name = aResourceTOList.getName();
 
-                <%--  <%
-                      assert courseInformationList != null;
-                      for (int i = 1; i < sectionTOList.size(); i++) {
-                          String name = sectionTOList.get(i).getName();
-                  %>--%>
-
-                <%-- <%
-                     }
-                 %>--%>
+                %>
+                <div>
+                    <a href="/pages/resource.jsp?uuidResource=<%=uuidResource%>"><%=name%>
+                    </a>
+                </div>
+                <%}%>
             </div>
         </div>
-
     </div>
 </div>
 <!-- /Highlights -->
@@ -231,6 +250,13 @@
 <script src="/resources/userPages/js/headroom.min.js"></script>
 <script src="/resources/userPages/js/jQuery.headroom.min.js"></script>
 <script src="/resources/userPages/js/template.js"></script>
+<script>
+    $(function () {
+        $("#btn2").click(function () {
+            $("#myModal2").modal('show');
+        });
+    });
+</script>
 </body>
 </html>
 

@@ -1,5 +1,8 @@
+<%--suppress ALL --%>
 <%@ page import="course.SectionInformation" %>
 <%@ page import="course.to.SectionTO" %>
+<%@ page import="entity.CourseEntity" %>
+<%@ page import="util.CommonUtil" %>
 <%@ page import="util.CookieUtil" %>
 <%@ page import="util.MailUtil" %>
 <%@ page import="java.util.Arrays" %>
@@ -25,11 +28,20 @@
 
     <%
         CookieUtil cookieUtil = new CookieUtil(request);
+        String urlRedirect = "/pages/signin.jsp";
+
+        String uuidCourse = String.valueOf(request.getParameter("uuidCourse"));
+        List<CourseEntity> courseInformationList = null;
         List<SectionTO> sectionTOList = null;
-        try {
-            sectionTOList = new SectionInformation().getCourseSection(request.getParameter("uuidCourse"));
-        } catch (Exception ex) {
-            new MailUtil().sendErrorMailForAdmin(getClass().getName() + "\n" + Arrays.toString(ex.getStackTrace()));
+        if (cookieUtil.isFindCookie()) {
+            try {
+                courseInformationList = CommonUtil.getCourseInformationByUuid(request.getParameter("uuidCourse"));
+                sectionTOList = new SectionInformation().getCourseSection(uuidCourse);
+            } catch (Exception ex) {
+                new MailUtil().sendErrorMailForAdmin(getClass().getName() + "\n" + Arrays.toString(ex.getStackTrace()));
+            }
+        } else {
+            response.sendRedirect(urlRedirect);
         }
 
     %>
@@ -63,55 +75,80 @@
 </div>
 
 <!-- Header -->
+<!-- /Header -->
 <header id="head">
     <div class="container">
         <div class="row">
-            <div class="modal-body">
-                <form role="form" method="post" action="/sectionhandler">
-                    <div class="form-group">
-                        <label for="name">Название</label>
-                        <input type="text" class="form-control" id="name" name="name" required maxlength="50">
+            <p><a href="#myModal2" id="btn2" class="btn btn-primary">Открыть окно добавления раздела</a></p>
+            <div id="myModal2" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h4 class="modal-title" style="color: #3A3A3A">Добавить раздел</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form role="form" method="post" action="/sectionhandler">
+                                <input type="hidden" name="uuidCourse" value="<%=request.getParameter("uuidCourse")%>">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="name" name="name" required maxlength="50"placeholder="Название">
+                                </div>
+                                <div class="form-group">
+                                    <label for="description">Описание</label>
+                                    <textarea class="form-control" type="textarea" name="description" id="description"
+                                              placeholder="Описание" maxlength="6000" rows="7"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-lg btn-success btn-block" id="btnContactUs">Добавить
+                                </button>
+                            </form>
+                        </div>
+
                     </div>
-                    <div class="form-group">
-                        <label for="uuid_course">Курс (тестовое поле)</label>
-                        <input type="text" class="form-control" id="uuid_course" name="uuid_course" required
-                               maxlength="50">
-                    </div>
-                    <div class="form-group">
-                        <label for="description">Описание</label>
-                        <textarea class="form-control" type="textarea" name="description" id="description"
-                                  placeholder="Your Message Here" maxlength="6000" rows="7"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-lg btn-success btn-block" id="btnContactUs">Добавить</button>
-                </form>
-                <div id="success_message" style="width:100%; height:100%; display:none; "><h3>Sent your message
-                    successfully!</h3></div>
-                <div id="error_message" style="width:100%; height:100%; display:none; "><h3>Error</h3> Sorry there was
-                    an error sending your form.
                 </div>
             </div>
         </div>
     </div>
 </header>
-<!-- /Header -->
+
+<div class="container text-center">
+    <br> <br>
+    <h2 class="thin">The best place to tell people why they are here</h2>
+    <p class="text-muted">
+            <%
+        assert courseInformationList != null;
+        if (courseInformationList.size() != 0) {
+    %>
+    <h3><%=courseInformationList.get(0).getUuid()%>
+    </h3>
+    <h3><%=courseInformationList.get(0).getNameCourse()%>
+    </h3>
+    <h3><%=courseInformationList.get(0).getStatus()%>
+    </h3>
+    <h3><%=courseInformationList.get(0).getCategory()%>
+    </h3>
+    <%
+        }
+    %>
+    </p>
+</div>
 
 <!-- Highlights - jumbotron -->
 <div class="jumbotron top-space">
     <div class="container">
 
-        <h3 class="text-center thin">Reasons to use this template</h3>
+        <h3 class="text-center thin">Разделы курса</h3>
 
         <div class="row">
             <div class="older">
                 <%
                     assert sectionTOList != null;
-                    for (int i = 1; i < sectionTOList.size(); i++) {
-                        String id = sectionTOList.get(i).getUuidSection();
+                    for (int i = 0; i < sectionTOList.size(); i++) {
+                        String uuidSection = sectionTOList.get(i).getUuidSection();
                         String name = sectionTOList.get(i).getName();
 
                 %>
                 <div>
-                    <a href="/pages/section.jsp?uuid=<%=id%>"><%=name%>
+                    <a href="/pages/section.jsp?uuidCourse=<%=uuidCourse%>&&uuidSection=<%=uuidSection%>"><%=name%>
                     </a>
                 </div>
                 <%}%>
@@ -197,13 +234,19 @@
     </div>
 
 </footer>
-
 <!-- JavaScript libs are placed at the end of the document so the pages load faster -->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 <script src="/resources/userPages/js/headroom.min.js"></script>
 <script src="/resources/userPages/js/jQuery.headroom.min.js"></script>
 <script src="/resources/userPages/js/template.js"></script>
+<script>
+    $(function () {
+        $("#btn2").click(function () {
+            $("#myModal2").modal('show');
+        });
+    });
+</script>
 </body>
 </html>
 

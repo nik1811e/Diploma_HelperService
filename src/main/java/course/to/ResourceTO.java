@@ -5,19 +5,12 @@ import com.google.gson.annotations.SerializedName;
 
 public class ResourceTO {
 
-    public ResourceTO() {
-        uuidAuth = null;
-        uuidSection = null;
-        link = null;
-        author = null;
-        name = null;
-        descriptionResource = null;
-        category_link = null;
-    }
-
     @SerializedName("uuid_auth")
     @Expose
     private String uuidAuth;
+    @SerializedName("uuid_resource")
+    @Expose
+    private String uuidResource;
     @SerializedName("uuid_section")
     @Expose
     private String uuidSection;
@@ -35,7 +28,7 @@ public class ResourceTO {
     private String descriptionResource;
     @SerializedName("category_link")
     @Expose
-    private String category_link;
+    private int category_link;
 
     public String getUuidAuth() {
         return uuidAuth;
@@ -77,11 +70,11 @@ public class ResourceTO {
         this.descriptionResource = descriptionResource;
     }
 
-    public String getCategory_link() {
+    public int getCategory_link() {
         return category_link;
     }
 
-    public void setCategory_link(String category_link) {
+    public void setCategory_link(int category_link) {
         this.category_link = category_link;
     }
 
@@ -91,5 +84,13 @@ public class ResourceTO {
 
     public void setAuthor(String author) {
         this.author = author;
+    }
+
+    public String getUuidResource() {
+        return uuidResource;
+    }
+
+    public void setUuidResource(String uuidResource) {
+        this.uuidResource = uuidResource;
     }
 }

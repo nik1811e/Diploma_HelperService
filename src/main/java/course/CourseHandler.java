@@ -18,6 +18,7 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @WebServlet(urlPatterns = "/coursehandler")
@@ -32,12 +33,14 @@ public class CourseHandler extends HttpServlet implements Serializable {
     private String errorMessage;
     private Gson gson = new Gson();
 
-    public CourseHandler() {
+    public CourseHandler(){
 
     }
 
     public CourseHandler(String uuidAuth) {
-
+        session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        this.idAuth = CommonUtil.getIdAuthByUUID(session, uuidAuth);
     }
 
     @Override
@@ -50,7 +53,7 @@ public class CourseHandler extends HttpServlet implements Serializable {
             boolean success = addCourse(session, String.valueOf(req.getParameter("name_course").trim()),
                     String.valueOf(req.getParameter("status").trim()), Integer.parseInt(req.getParameter("id_category")), String.valueOf(req.getParameter("desc").trim()));
             if (success) {
-                resp.sendRedirect("/pages/course?uuid=" + uuidNewCourse);
+                resp.sendRedirect("/pages/course.jsp?uuidCourse="+uuidNewCourse);
             } else {
                 PrintWriter printWriter = resp.getWriter();
                 printWriter.println(errorMessage);
@@ -65,25 +68,14 @@ public class CourseHandler extends HttpServlet implements Serializable {
     }
 
     private boolean isUniqueNameCourse(String name) {
-       /* try {
-            CourseStructureTO courseStructureTOgson = null;
-            List<Object[]> structureList;
-            structureList = (List<Object[]>) session.createQuery("SELECT s.structure FROM " + VariablesUtil.ENTITY_COURSE + " s WHERE s.authById = :id_auth")
-                    .setParameter("id_auth", this.idAuth).list();
-            for (Object str : structureList ) {
-                courseStructureTOgson = gson.fromJson(String.valueOf(str), CourseStructureTO.class);
-                if (courseStructureTOgson.getNameCourse().trim().equals(name.trim())) {
-                    return false;
-                }
-            }
-
+        try {
+            return session.createQuery("SELECT c FROM " + VariablesUtil.ENTITY_COURSE + " c WHERE c.nameCourse = :nameCourse")
+                    .setParameter("nameCourse", name).list().isEmpty();
         } catch (Exception ex) {
             new MailUtil().sendErrorMailForAdmin(getClass().getName() + "\n" + Arrays.toString(ex.getStackTrace()));
             logger.error(ex.getStackTrace());
             return false;
-
-        }*/
-        return true;
+        }
     }
 
     private boolean addCourse(Session session, String name, String status, int idCategory, String desc) {
@@ -115,6 +107,23 @@ public class CourseHandler extends HttpServlet implements Serializable {
         }
     }
 
+    public List<CourseEntity> getUserCourse() {
+        logger.debug(getClass().getName() + "getUserCourse");
+        session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        try {
+            return session.createQuery("SELECT c FROM " + VariablesUtil.ENTITY_COURSE + " c WHERE authById =:idAuth", CourseEntity.class)
+                    .setParameter("idAuth", session.load(AuthInfEntity.class, idAuth)).getResultList();
+        } catch (Exception ex) {
+            logger.error(ex.getLocalizedMessage());
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+        return null;
+    }
+
     private String addStructureCourse(String uuid_user, String name_course, String description_course, String
             status, String date) {
 
@@ -128,7 +137,6 @@ public class CourseHandler extends HttpServlet implements Serializable {
                 "\t]\n" +
                 "}";
     }
-
 
 
 }

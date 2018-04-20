@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 @WebServlet(urlPatterns = "/resourcehandler")
 public class ResourceHandler extends HttpServlet implements Serializable {
@@ -30,6 +31,7 @@ public class ResourceHandler extends HttpServlet implements Serializable {
     private String uuidSection;
     private String uuidCourse;
     private String errorMessage;
+    private String uuidNewResource;
 
     private Gson gson = new Gson();
 
@@ -40,12 +42,12 @@ public class ResourceHandler extends HttpServlet implements Serializable {
         this.uuidAuth = new CookieUtil(req).getUserUuidFromToken();
         this.uuidSection = req.getParameter("uuid_section");
         this.uuidCourse = req.getParameter("uuid_course");
+        this.uuidNewResource = UUID.randomUUID().toString();
         try {
             boolean result = addResource(prepareAddResource(req.getParameter("name_resource"),
-                    req.getParameter("link"), req.getParameter("author"), req.getParameter("desc")));
+                    req.getParameter("link"), req.getParameter("author"), req.getParameter("desc"), Integer.parseInt(req.getParameter("id_category"))));
             if (result) {
-                PrintWriter printWriter = resp.getWriter();
-                printWriter.println("Resource was created successfully");
+                resp.sendRedirect("/pages/resource.jsp?uuidResource="+uuidNewResource);
             } else {
                 PrintWriter printWriter = resp.getWriter();
                 printWriter.println(errorMessage);
@@ -57,7 +59,7 @@ public class ResourceHandler extends HttpServlet implements Serializable {
         }
     }
 
-    private String prepareAddResource(String name, String link, String author, String description) {
+    private String prepareAddResource(String name, String link, String author, String description, int id_category) {
         CourseStructureTO courseStructureTOgson = gson.fromJson(CommonUtil.getJsonStructure(session, this.uuidCourse), CourseStructureTO.class);
         List<SectionTO> sections = new ArrayList<>(courseStructureTOgson.getSection());
         List<SectionTO> tempSectionList = new ArrayList<>();
@@ -79,27 +81,33 @@ public class ResourceHandler extends HttpServlet implements Serializable {
         }
 
         if (isSectionExist(sections, uuidSection)) {
+            if (isUniqueResource(name, link, uuidSection, uuidCourse)) {
+                resourceTO.setName(String.valueOf(name).trim());
+                resourceTO.setLink(String.valueOf(link).trim());
+                resourceTO.setAuthor(String.valueOf(author).trim());
+                resourceTO.setDescriptionResource(String.valueOf(description).trim());
+                resourceTO.setUuidAuth(String.valueOf(this.uuidAuth).trim());
+                resourceTO.setUuidSection(String.valueOf(this.uuidSection).trim());
+                resourceTO.setUuidResource(uuidNewResource);
+                resourceTO.setCategory_link(id_category);
+                res.add(resourceTO);
 
-            resourceTO.setName(String.valueOf(name).trim());
-            resourceTO.setLink(String.valueOf(link).trim());
-            resourceTO.setAuthor(String.valueOf(author).trim());
-            resourceTO.setDescriptionResource(String.valueOf(description).trim());
-            resourceTO.setUuidAuth(String.valueOf(this.uuidAuth).trim());
-            resourceTO.setUuidSection(String.valueOf(this.uuidSection).trim());
-            res.add(resourceTO);
-
-            for (SectionTO sect : sections) {
-                if (sect.getUuidSection().equals(this.uuidSection)) {
-                    sect.setResource(res);
-                    tempSectionList.add(sect);
-                } else {
-                    tempSectionList.add(sect);
+                for (SectionTO sect : sections) {
+                    if (sect.getUuidSection().equals(this.uuidSection)) {
+                        sect.setResource(res);
+                        tempSectionList.add(sect);
+                    } else {
+                        tempSectionList.add(sect);
+                    }
                 }
+                courseStructureTOgson.setSection(tempSectionList);
+            } else {
+                errorMessage = "Подобный ресурс уже добавлен!";
             }
-            courseStructureTOgson.setSection(tempSectionList);
+
 
         } else {
-            errorMessage = "Такого раздела нет";
+            errorMessage = "Такого раздела нет!";
         }
 
         return gson.toJson(courseStructureTOgson);
@@ -118,7 +126,15 @@ public class ResourceHandler extends HttpServlet implements Serializable {
         }
     }
 
-    private boolean idUniqueResource(String name, String link) {
+    private boolean isUniqueResource(String name, String link, String uuidCourse, String uuidSection) {
+
+        /*List<ResourceTO> resourceTOList = new ResourceInformation().getSectionResource(uuidSection,uuidCourse);
+        for (ResourceTO rc :
+                resourceTOList) {
+            if (rc.getName().trim().equals(name.trim()) || rc.getLink().trim().equals(link.trim())) {
+                return false;
+            }
+        }*/
         return true;
     }
 

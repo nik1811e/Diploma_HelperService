@@ -1,5 +1,7 @@
-<%@ page import="course.CourseInformation" %>
+<%@ page import="course.CourseHandler" %>
+<%@ page import="entity.CategoryEntity" %>
 <%@ page import="entity.CourseEntity" %>
+<%@ page import="util.CommonUtil" %>
 <%@ page import="util.CookieUtil" %>
 <%@ page import="java.util.List" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -8,23 +10,26 @@
 
     <title>Helper service | Main</title>
     <link rel="shortcut icon" href="/resources/userPages/images/gt_favicon.png">
+
     <link rel="stylesheet" media="screen" href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,700">
     <link rel="stylesheet" href="/resources/userPages/css/bootstrap.min.css">
     <link rel="stylesheet" href="/resources/userPages/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/resources/userPages/css/list.css">
+
     <link rel="stylesheet" href="/resources/userPages/css/bootstrap-theme.css" media="screen">
     <link rel="stylesheet" href="/resources/userPages/css/main.css">
+
     <script src="/resources/userPages/js/html5shiv.js"></script>
     <script src="/resources/userPages/js/respond.min.js"></script>
 
     <%
         CookieUtil cookieUtil = new CookieUtil(request);
-
         String urlRedirect = "/pages/signin.jsp";
         List<CourseEntity> userCourseList = null;
-        CourseInformation courseInformation = null;
+        List<CategoryEntity> categoryEntityList = null;
         if (cookieUtil.isFindCookie()) {
-            courseInformation = new CourseInformation(cookieUtil.getUserUuidFromToken());
-            userCourseList = courseInformation.getUserCourse();
+            userCourseList = new CourseHandler(cookieUtil.getUserUuidFromToken()).getUserCourse();
+            categoryEntityList = CommonUtil.getCourseCategory();
         } else {
             response.sendRedirect(urlRedirect);
             return;
@@ -65,38 +70,58 @@
 <header id="head">
     <div class="container">
         <div class="row">
-            <div class="modal-body">
-                <form action="/coursehandler" role="form" method="post">
-                    <div class="form-group">
-                        <label for="name">Название</label>
-                        <input type="text" class="form-control" id="name" name="name_course" required maxlength="50">
+            <p><a href="#myModal2" id="btn2" class="btn btn-primary">Открыть окно добавления курса</a></p>
+            <div id="myModal2" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h4 class="modal-title">Заголовок модального окна 2</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form action="/coursehandler" role="form" method="post">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="name" name="name_course" required
+                                           maxlength="50" placeholder="Название">
+                                </div>
+                                <div class="form-group">
+                                    <select class="form-control" id="status" name="status">
+                                        <option value="" disabled>Выберите тип доступа</option>
+                                        <option>public</option>
+                                        <option>private</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <select class="form-control" id="id_category" name="id_category">
+                                        <option value="" disabled>Выберите категорию</option>
+                                        <%
+                                            assert categoryEntityList != null;
+                                            for (int i = 0; i < categoryEntityList.size(); i++) {
+                                                int id = categoryEntityList.get(i).getId();
+                                                String name = categoryEntityList.get(i).getName();
+
+                                        %>
+                                        <option value="<%=id%>"><%=name%>
+                                        </option>
+                                        <%}%>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <textarea class="form-control" type="textarea" name="desc" id="desc"
+                                              placeholder="Описание курса" maxlength="6000" rows="7"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-lg btn-success btn-block" id="btnContactUs">
+                                    Добавить
+                                </button>
+                            </form>
+                        </div>
+
                     </div>
-                    <div class="form-group">
-                        <label for="status">Статус</label>
-                        <select class="form-control" id="status" name="status">
-                            <option>public</option>
-                            <option>private</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="id_category">Категория</label>
-                        <input type="text" class="form-control" id="id_category" name="id_category" required
-                               maxlength="50">
-                    </div>
-                    <div class="form-group">
-                        <label for="desc">Описание</label>
-                        <textarea class="form-control" type="textarea" name="desc" id="desc"
-                                  placeholder="Your Message Here" maxlength="6000" rows="7"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-lg btn-success btn-block" id="btnContactUs">Добавить</button>
-                </form>
-                <div id="success_message" style="width:100%; height:100%; display:none; "><h3>Sent your message
-                    successfully!</h3></div>
-                <div id="error_message" style="width:100%; height:100%; display:none; "><h3>Error</h3> Sorry there was
-                    an error sending your form.
                 </div>
             </div>
         </div>
+    </div>
     </div>
 </header>
 <!-- /Header -->
@@ -112,7 +137,7 @@
 <div class="jumbotron top-space">
     <div class="container">
 
-        <h3 class="text-center thin"><b>Ваши курсы</b></h3>
+        <h3 class="text-center thin">Ваши курсы</h3>
 
         <div class="row">
             <div class="older">
@@ -125,18 +150,12 @@
                     <a href="/pages/course.jsp?uuidCourse=<%=uuid%>"><%=name%>
                     </a>
                 </div>
-                <%
-                    }
-                %>
+                <%}%>
             </div>
         </div>
-        <!-- /row  -->
-
-        </table>
     </div>
 </div>
 <!-- /Highlights -->
-
 <footer id="footer" class="top-space">
     <div class="footer1">
         <div class="container">
@@ -219,6 +238,13 @@
 <script src="/resources/userPages/js/headroom.min.js"></script>
 <script src="/resources/userPages/js/jQuery.headroom.min.js"></script>
 <script src="/resources/userPages/js/template.js"></script>
+<script>
+    $(function () {
+        $("#btn2").click(function () {
+            $("#myModal2").modal('show');
+        });
+    });
+</script>
 </body>
 </html>
 
