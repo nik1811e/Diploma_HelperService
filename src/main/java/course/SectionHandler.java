@@ -43,7 +43,7 @@ public class SectionHandler extends HttpServlet implements Serializable {
             boolean result = addSection(prepareAddSection(String.valueOf(req.getParameter("name").trim()),
                     uuidCourse, String.valueOf(req.getParameter("description").trim())));
             if (result) {
-                resp.sendRedirect("/pages/section.jsp?uuidSection=" + uuidNewSection);
+                resp.sendRedirect("/pages/section.jsp?uuidSection=" + uuidNewSection +"&&uuidCourse="+uuidCourse);
             }
         } catch (Exception ex) {
             new MailUtil().sendErrorMailForAdmin(getClass().getName() + "\n" + Arrays.toString(ex.getStackTrace()));

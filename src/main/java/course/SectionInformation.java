@@ -31,4 +31,26 @@ public class SectionInformation extends HttpServlet {
             }
         }
     }
+
+    public SectionTO getSectionInformation(String uuidCourse, String uuidSection) {
+        logger.info("getSectionInformation");
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        try {
+            List<SectionTO> sectionTOList = getCourseSection(uuidCourse);
+            for (SectionTO st : sectionTOList) {
+                if (st.getUuidSection().equals(uuidSection)) {
+                    return st;
+                }
+            }
+        } catch (Exception ex) {
+            return null;
+        } finally {
+            if (session.isOpen()) {
+                session.close();
+            }
+        }
+        return null;
+    }
+
 }

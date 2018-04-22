@@ -1,14 +1,12 @@
 package entity;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
 @Table(name = "category", schema = "public", catalog = "service")
 public class CategoryEntity {
     private int id;
     private String name;
-    private Set<CourseEntity> coursesById;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

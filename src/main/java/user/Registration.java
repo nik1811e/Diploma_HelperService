@@ -90,7 +90,7 @@ public class Registration extends HttpServlet implements IParseJsonString {
 
     private boolean isLoginAndEmailEmpty(String login, String email) {
         Query query = session.createQuery("SELECT a.login, a.email FROM " +
-                VariablesUtil.ENTITY_AUTH_INFO + " a WHERE a.login = :login AND a.email = :email");
+                VariablesUtil.ENTITY_AUTH_INFO + " a WHERE a.login = :login OR a.email = :email");
         query.setParameter("login", login);
         query.setParameter("email", email);
         return query.list().isEmpty();

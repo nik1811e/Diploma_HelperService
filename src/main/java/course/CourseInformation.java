@@ -1,21 +1,53 @@
 package course;
 
+import entity.AuthInfEntity;
+import entity.CourseEntity;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
+import util.CommonUtil;
+import util.HibernateUtil;
+import util.VariablesUtil;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
+import java.util.List;
 
 @WebServlet(urlPatterns = "/courseinformation")
 public class CourseInformation extends HttpServlet {
     private static final Logger logger = Logger.getLogger(CourseInformation.class);
-    private final String uuidCourse;
     private Session session;
 
-
-    public CourseInformation(String uuidCourse) {
-        this.uuidCourse = uuidCourse;
+    public List<CourseEntity> getUserCourse(String uuidAuth) {
+        logger.debug(getClass().getName() + "getUserCourse");
+        session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        try {
+            return session.createQuery("SELECT c FROM " + VariablesUtil.ENTITY_COURSE + " c WHERE authById =:idAuth", CourseEntity.class)
+                    .setParameter("idAuth", session.load(AuthInfEntity.class, CommonUtil.getIdAuthByUUID(session,uuidAuth))).getResultList();
+        } catch (Exception ex) {
+            logger.error(ex.getLocalizedMessage());
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+        return null;
     }
 
-
+    public List<CourseEntity> getCourseInformation(String uuidCourse) {
+        logger.info("getCourseInformationByUuid");
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        try {
+            return session.createQuery("SELECT c FROM " + VariablesUtil.ENTITY_COURSE + " c WHERE c.uuid =:uuidCourse", CourseEntity.class)
+                    .setParameter("uuidCourse", uuidCourse).getResultList();
+        } catch (Exception ex) {
+            logger.error(ex.getLocalizedMessage());
+        } finally {
+            if (session.isOpen()) {
+                session.close();
+            }
+        }
+        return null;
+    }
 }

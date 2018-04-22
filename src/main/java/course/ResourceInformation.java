@@ -38,4 +38,25 @@ public class ResourceInformation extends HttpServlet {
         }
     }
 
+    public ResourceTO getResourceInformation(String uuidCourse, String uuidSection, String uuidResource) {
+        logger.info("getResourceInformation");
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        try {
+            List<ResourceTO> resourceTOList = getSectionResource(uuidSection, uuidCourse);
+            for (ResourceTO rt : resourceTOList) {
+                if (rt.getUuidResource().equals(uuidResource)) {
+                    return rt;
+                }
+
+            }
+        } catch (Exception ex) {
+            return null;
+        } finally {
+            if (session.isOpen()) {
+                session.close();
+            }
+        }
+        return null;
+    }
 }

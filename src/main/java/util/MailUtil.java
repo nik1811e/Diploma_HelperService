@@ -66,7 +66,7 @@ public class MailUtil {
                     "<p>You profile: <a href=\"" + url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + "/profile.jsp?login=" + login + "\">" +
                     "" + url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + "/profile.jsp?user=" + login + "</a></p>";
 
-            setupParametersForMessage(VariablesUtil.EMAIL_TEST, subject, mailBody);
+            setupParametersForMessage(email, subject, mailBody);
         } catch (MalformedURLException e) {
             logger.error(e.getMessage());
         }

@@ -21,12 +21,10 @@ public final class VariablesUtil {
     public static final String PATTERN_TIME = "HH:mm:ss:SSS";
     public static final String PATTERN_DATE_TIME = "dd/MM/yyyy, HH:mm:ss:SSS";
 
-    static final String EMAIL_TEST = "service.helper.eng@gmail.com";
-
     public static final String COOKIE_KEY = "a7fca695-ae2b-4aea-bc17-e62106e14c57";
     public static final String COOKIE_AUTH_NAME = "service_auth";
 
-    public static final String MESSAGE_ERROR_SERVER = "Please, contact with administrator. Email: service.helper.eng@gmail.com";
+    public static final String MESSAGE_ERROR_SERVER = "Please, contact us. Email: service.helper.eng@gmail.com";
 
     public static final String REGEXP_EMAIL = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$";
     public static final String REGEXP_PASSWORD = "";

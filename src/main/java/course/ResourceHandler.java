@@ -47,7 +47,7 @@ public class ResourceHandler extends HttpServlet implements Serializable {
             boolean result = addResource(prepareAddResource(req.getParameter("name_resource"),
                     req.getParameter("link"), req.getParameter("author"), req.getParameter("desc"), Integer.parseInt(req.getParameter("id_category"))));
             if (result) {
-                resp.sendRedirect("/pages/resource.jsp?uuidResource="+uuidNewResource);
+                resp.sendRedirect("/pages/resource.jsp?uuidCourse="+uuidCourse+"&uuidSection="+uuidSection+"&uuidResource="+uuidNewResource);
             } else {
                 PrintWriter printWriter = resp.getWriter();
                 printWriter.println(errorMessage);
@@ -128,13 +128,13 @@ public class ResourceHandler extends HttpServlet implements Serializable {
 
     private boolean isUniqueResource(String name, String link, String uuidCourse, String uuidSection) {
 
-        /*List<ResourceTO> resourceTOList = new ResourceInformation().getSectionResource(uuidSection,uuidCourse);
+        List<ResourceTO> resourceTOList = new ResourceInformation().getSectionResource(uuidSection,uuidCourse);
         for (ResourceTO rc :
                 resourceTOList) {
             if (rc.getName().trim().equals(name.trim()) || rc.getLink().trim().equals(link.trim())) {
                 return false;
             }
-        }*/
+        }
         return true;
     }
 

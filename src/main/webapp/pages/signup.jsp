@@ -1,3 +1,4 @@
+<%--suppress ALL --%>
 <%@ page import="util.ReCaptchaUtil" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html lang="en">
@@ -25,27 +26,27 @@
 <div class="navbar navbar-inverse navbar-fixed-top headroom">
     <div class="container">
         <div class="navbar-header">
+            <!-- Button for smallest screens -->
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"><span
                     class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span></button>
-            <a class="navbar-brand" href="index.jsp"><img
-                    src="${pageContext.request.contextPath}/resources/userPages/images/logo.png"
-                    alt="Helper Service Logo"></a>
+            <a class="navbar-brand" href="/pages/index.jsp"><img src="/resources/userPages/images/logo.png"
+                                                                 alt="Helper Service Logo"></a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav pull-right">
-                <li><a href="index.jsp">Home</a></li>
-                <li><a href="about.html">About</a></li>
+                <li><a href="/pages/index.jsp">Главная</a></li>
+                <li><a href="/pages/catalog.jsp">Мои ресурсы</a></li>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">More Pages <b class="caret"></b></a>
+                    <a href="/pages/users.jsp" class="dropdown-toggle" data-toggle="dropdown">Пользователи<b
+                            class="caret"></b></a>
                     <ul class="dropdown-menu">
-                        <li><a href="sidebar-left.html">Left Sidebar</a></li>
-                        <li><a href="sidebar-right.html">Right Sidebar</a></li>
+                        <li><a href="/pages/users.jsp">Список пользователей</a></li>
+                        <li><a href="/pages/followings.jsp">Мои подписки</a></li>
                     </ul>
                 </li>
-                <li><a href="contact.html">Contact</a></li>
-                <li class="active"><a class="btn" href="signin.html">SIGN IN / SIGN UP</a></li>
+                <li><a class="btn" href="/pages/signin.jsp">Авторизация</a></li>
             </ul>
-        </div>
+        </div><!--/.nav-collapse -->
     </div>
 </div>
 <!-- /.navbar -->
@@ -56,54 +57,53 @@
 <div class="container">
 
     <ol class="breadcrumb">
-        <li><a href="index.jsp">Home</a></li>
-        <li class="active">Registration</li>
+        <li><a href="index.jsp">Главная</a></li>
+        <li class="active">Регистрация</li>
     </ol>
 
     <div class="row">
         <!-- Article main content -->
         <article class="col-xs-12 maincontent">
             <header class="page-header">
-                <h1 class="page-title">Registration</h1>
+                <h1 class="page-title">Регистрация</h1>
             </header>
 
             <div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        <h3 class="thin text-center">Register a new account</h3>
-                        <p class="text-center text-muted">Lorem ipsum dolor sit amet, <a href="signin.jsp">Login</a>
-                            adipisicing elit. Quo nulla quibusdam cum doloremque incidunt nemo sunt a tenetur omnis
-                            odio. </p>
+                        <h3 class="thin text-center">Создание новой учетной записи</h3>
+                        <p class="text-center text-muted">Уже есть учетная запись? Пройдите по ссылке <a
+                                href="signin.jsp">Login</a> для входа.</p>
                         <hr>
 
                         <form action="/registration" method="post">
                             <div class="top-margin">
-                                <label>First Name</label>
+                                <label>Имя</label>
                                 <input type="text" class="form-control" name="fname">
                             </div>
                             <div class="top-margin">
-                                <label>Last Name</label>
+                                <label>Фамилия</label>
                                 <input type="text" class="form-control" name="lname">
                             </div>
                             <div class="top-margin">
-                                <label>Birthday</label>
-                                <input type="text" class="form-control" name="bday">
+                                <label>Дата рождения</label>
+                                <input type="date" class="form-control" name="bday">
                             </div>
                             <div class="top-margin">
-                                <label>Login<span class="text-danger">*</span></label>
+                                <label>Логин<span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" name="login">
                             </div>
                             <div class="top-margin">
-                                <label>Email Address <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="email">
+                                <label>Email<span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" name="email">
                             </div>
                             <div class="row top-margin">
                                 <div class="col-sm-6">
-                                    <label>Password <span class="text-danger">*</span></label>
+                                    <label>Пароль <span class="text-danger">*</span></label>
                                     <input type="password" class="form-control" name="password">
                                 </div>
                                 <div class="col-sm-6">
-                                    <label>Confirm Password <span class="text-danger">*</span></label>
+                                    <label>Подтвердите пароль<span class="text-danger">*</span></label>
                                     <input type="password" class="form-control" name="confirm_password">
                                 </div>
                             </div>
@@ -111,50 +111,34 @@
                             <div class="g-recaptcha" data-sitekey="<%=ReCaptchaUtil.PUBLIC%>"></div>
                             <hr>
                             <div class="col-lg-4 text-right">
-                                <button class="btn btn-action" type="submit">Register</button>
+                                <button class="btn btn-action" type="submit">Создать</button>
                             </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
+        </article>
+        <!-- /Article -->
 
     </div>
-
-    </article>
-    <!-- /Article -->
-
-</div>
 </div>    <!-- /container -->
 
 
 <footer id="footer" class="top-space">
-
     <div class="footer1">
         <div class="container">
             <div class="row">
-
                 <div class="col-md-3 widget">
-                    <h3 class="widget-title">Contact</h3>
+                    <h3 class="widget-title">Контакты</h3>
                     <div class="widget-body">
-                        <p>+234 23 9873237<br>
-                            <a href="mailto:#">some.email@somewhere.com</a><br>
-                            <br>
-                            234 Hidden Pond Road, Ashland City, TN 37015
+                        <p>
+                            <a href="mailto:service.helper.eng@gmail.com">service.helper.eng@gmail.com</a><br>
+
                         </p>
                     </div>
                 </div>
-
                 <div class="col-md-3 widget">
-                    <h3 class="widget-title">Follow me</h3>
-                    <div class="widget-body">
-                        <p class="follow-me-icons clearfix">
-                            <a href=""><i class="fa fa-twitter fa-2"></i></a>
-                            <a href=""><i class="fa fa-dribbble fa-2"></i></a>
-                            <a href=""><i class="fa fa-github fa-2"></i></a>
-                            <a href=""><i class="fa fa-facebook fa-2"></i></a>
-                        </p>
-                    </div>
                 </div>
-
                 <div class="col-md-6 widget">
                     <h3 class="widget-title">Text widget</h3>
                     <div class="widget-body">
@@ -181,10 +165,7 @@
                     <div class="widget-body">
                         <p class="simplenav">
                             <a href="#">Home</a> |
-                            <a href="about.html">About</a> |
-                            <a href="sidebar-right.html">Sidebar</a> |
-                            <a href="contact.html">Contact</a> |
-                            <b><a href="signup.html">Sign up</a></b>
+                            <b><a href="signup.jsp">Sign up</a></b>
                         </p>
                     </div>
                 </div>
@@ -192,8 +173,8 @@
                 <div class="col-md-6 widget">
                     <div class="widget-body">
                         <p class="text-right">
-                            Copyright &copy; 2014, Your name. Designed by <a href="http://gettemplate.com/"
-                                                                             rel="designer">gettemplate</a>
+                            Copyright &copy; 2018, Developed by <a href="https://vk.com/xxxnikgtxxx" rel="developer">Eliseenko
+                            Nikita</a>
                         </p>
                     </div>
                 </div>
@@ -201,6 +182,7 @@
             </div> <!-- /row of widgets -->
         </div>
     </div>
+
 </footer>
 
 <!-- JavaScript libs are placed at the end of the document so the pages load faster -->
@@ -208,6 +190,6 @@
 <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 <script src="/resources/userPages/js/headroom.min.js"></script>
 <script src="/resources/userPages/js/jQuery.headroom.min.js"></script>
-<script src="/resources/userPages/js/template.js"></script>
+<script src="/resources/userPages/js/hs.js"></script>
 </body>
 </html>

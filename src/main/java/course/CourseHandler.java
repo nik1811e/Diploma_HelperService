@@ -18,7 +18,6 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @WebServlet(urlPatterns = "/coursehandler")
@@ -35,12 +34,6 @@ public class CourseHandler extends HttpServlet implements Serializable {
 
     public CourseHandler(){
 
-    }
-
-    public CourseHandler(String uuidAuth) {
-        session = HibernateUtil.getSessionFactory().openSession();
-        session.beginTransaction();
-        this.idAuth = CommonUtil.getIdAuthByUUID(session, uuidAuth);
     }
 
     @Override
@@ -105,23 +98,6 @@ public class CourseHandler extends HttpServlet implements Serializable {
             errorMessage = "Course creation failed";
             return false;
         }
-    }
-
-    public List<CourseEntity> getUserCourse() {
-        logger.debug(getClass().getName() + "getUserCourse");
-        session = HibernateUtil.getSessionFactory().openSession();
-        session.beginTransaction();
-        try {
-            return session.createQuery("SELECT c FROM " + VariablesUtil.ENTITY_COURSE + " c WHERE authById =:idAuth", CourseEntity.class)
-                    .setParameter("idAuth", session.load(AuthInfEntity.class, idAuth)).getResultList();
-        } catch (Exception ex) {
-            logger.error(ex.getLocalizedMessage());
-        } finally {
-            if (session != null && session.isOpen()) {
-                session.close();
-            }
-        }
-        return null;
     }
 
     private String addStructureCourse(String uuid_user, String name_course, String description_course, String
