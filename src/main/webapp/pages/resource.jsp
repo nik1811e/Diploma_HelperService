@@ -1,21 +1,25 @@
 <%--suppress ALL --%>
-<%@ page import="course.ResourceInformation" %>
-<%@ page import="course.to.ResourceTO" %>
-<%@ page import="util.CommonUtil" %>
+<%@ page import="course.pojo.ResourceTO" %>
+<%@ page import="course.pojo.SectionTO" %>
+<%@ page import="course.resources.ResourceInformation" %>
+<%@ page import="course.sections.SectionInformation" %>
 <%@ page import="util.CookieUtil" %>
 <%@ page import="util.MailUtil" %>
+<%@ page import="util.MethodUtil" %>
 <%@ page import="java.util.Arrays" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.util.List" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <html>
 <head>
 
-    <title>Helper service | Main</title>
+    <title>Helper service | Resource</title>
 
     <link rel="shortcut icon" href="/resources/userPages/images/gt_favicon.png">
 
     <link rel="stylesheet" media="screen" href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,700">
     <link rel="stylesheet" href="/resources/userPages/css/bootstrap.min.css">
     <link rel="stylesheet" href="/resources/userPages/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/resources/userPages/css/list.css">
 
     <link rel="stylesheet" href="/resources/userPages/css/bootstrap-theme.css" media="screen">
     <link rel="stylesheet" href="/resources/userPages/css/main.css">
@@ -27,13 +31,19 @@
         CookieUtil cookieUtil = new CookieUtil(request);
         String urlRedirect = "/pages/signin.jsp";
         ResourceTO resource = null;
+        List<SectionTO> sections = null;
         String uuidCourse = null;
         String uuidSection = null;
         String uuidResource = null;
+        SectionTO sectionInformations = null;
         if (cookieUtil.isFindCookie()) {
             uuidCourse = String.valueOf(request.getParameter("uuidCourse")).trim();
             uuidSection = String.valueOf(request.getParameter("uuidSection")).trim();
             uuidResource = String.valueOf(request.getParameter("uuidResource")).trim();
+            sections = new SectionInformation().getCourseSection(uuidCourse);
+/*
+            sectionInformations = new SectionInformation().getSectionInformation(uuidCourse, uuidSection);
+*/
             try {
                 resource = new ResourceInformation().getResourceInformation(uuidCourse, uuidSection, uuidResource);
             } catch (Exception ex) {
@@ -60,7 +70,7 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav pull-right">
-                <li class="active"><a href="#">Главная</a></li>
+                <li class="active"><a href="/pages/index.jsp">Главная</a></li>
                 <li><a href="/pages/catalog.jsp">Мои ресурсы</a></li>
                 <li class="dropdown">
                     <a href="/pages/users.jsp" class="dropdown-toggle" data-toggle="dropdown">Пользователи<b
@@ -70,7 +80,14 @@
                         <li><a href="/pages/followings.jsp">Мои подписки</a></li>
                     </ul>
                 </li>
-                <li><a class="btn" href="#">Авторизация</a></li>
+                <li><a href="/pages/requests.jsp?uuidAuth=<%=cookieUtil.getUserUuidFromToken()%>">Запросы</a></li>
+
+                <%if (!cookieUtil.isFindCookie()) {%>
+                <li><a class="btn" href="/pages/signin.jsp">Авторизация</a></li>
+                <%} else {%>
+                <li><a class="btn" href="/pages/profile.jsp?uuidAuth=<%=cookieUtil.getUserUuidFromToken()%>">Профиль</a>
+                </li>
+                <%}%>
             </ul>
         </div><!--/.nav-collapse -->
     </div>
@@ -81,52 +98,159 @@
 <header id="head">
     <div class="container">
         <div class="row">
-
+            <h1 style="color: #ffffff;">Бесплатный сервис хранения ссылок и закладок!</h1>
         </div>
     </div>
 </header>
 <!-- /Header -->
 
 <!-- Intro -->
-<div class="container text-center">
+<div class="container">
     <ol class="breadcrumb">
         <li><a href="index.jsp">Главная</a></li>
-        <li><a href="catalog.jsp">Каталог</a></li>
-        <li><a href="course.jsp?uuidCourse=<%=uuidCourse%>"><%=CommonUtil.getCourseNameByUuid(uuidCourse)%>
+        <li><a href="catalog.jsp?uuidAuth=<%=request.getParameter("uuidAuth")%>">Ресурсы</a></li>
+        <li><a href="course.jsp?uuidAuth=<%=request.getParameter("uuidAuth")%>&&uuidCourse=<%=uuidCourse%>"><%=MethodUtil.getCourseNameByUuid(uuidCourse)%>
         </a></li>
         <li>
-            <a href="section.jsp?uuidCourse=<%=uuidCourse%>&uuidSection=<%=uuidSection%>" <%=CommonUtil.getSectionNameByUuid(uuidSection)%>
+            <a href="section.jsp?uuidAuth=<%=request.getParameter("uuidAuth")%>&&uuidCourse=<%=uuidCourse%>&&uuidSection=<%=uuidSection%>"><%=new MethodUtil().getSectionNameByUuid(uuidCourse, uuidSection)%>
+            </a>
         </li>
-        <li class="active"><%=resource.getName()%></li>
+        <li class="active"><%=resource.getName()%>
+        </li>
     </ol>
-    <br> <br>
-    <h2 class="thin">Информация ресурса</h2>
-    <div class="text-muted">
-        Название:<h3><%=resource.getName()%>
-    </h3>
-        Ссылка: <h3><%=resource.getLink()%>
-    </h3>
-
-        Автор ссылки: <h3><%=resource.getAuthor()%>
-    </h3>
-        Описание ссылки: <h3><%=resource.getDescriptionResource()%>
-    </h3>
+    <div class="text-center">
+        <br> <br>
+        <h2 class="thin">Информация ресурса</h2>
+        <table class="table table-dark">
+            <thead>
+            <tr>
+                <th scope="col">Название</th>
+                <th scope="col">Ссылка</th>
+                <th scope="col">Автор</th>
+                <th scope="col">Описание</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><%=resource.getName()%>
+                </td>
+                <td><a href="<%=resource.getLink()%>" style="text-decoration: none"><%=resource.getLink()%>
+                </a></td>
+                <td><%=resource.getAuthor()%>
+                </td>
+                <td><%=resource.getDescriptionResource()%>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 
+    <%if (cookieUtil.getUserUuidFromToken().equals(request.getParameter("uuidAuth"))) {%>
+    <p><a href="#myModal2" id="btn2" class="btn btn-primary">Сделать копию ссылки</a></p>
+    <div id="myModal2" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" style="color: #3A3A3A">Копирование ссылки</h4>
+                </div>
+                <div class="modal-body">
+                    <form role="form" method="post" action="/resourcehandler">
+                        <input type="hidden" name="uuidCourse" value="<%=request.getParameter("uuidCourse")%>">
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="name_resource" name="name_resource"
+                                   required
+                                   maxlength="50" placeholder="Название" value="<%=resource.getName()%>">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="link" required
+                                   maxlength="50"
+                                   value="<%=resource.getLink()%>">
+                        </div>
+                        <div class="form-group">
+                            <h4 style="color: #3A3A3A">Из</h4> <input type="text" class="form-control"
+                                                                      id="currentSection"
+                                                                      name="currentSection"
+                                                                      required
+                                                                      maxlength="50"
+                                                                      value="<%=new MethodUtil().getSectionNameByUuid(uuidCourse,resource.getUuidSection())%>"
+                                                                      disabled>
+                        </div>
+                        <div class="form-group">
+                            <h4 style="color: #3A3A3A">В</h4> <select class="form-control" id="uuidSection"
+                                                                      name="uuidSection">
+                            <option value="" disabled selected>Выберите раздел</option>
+                            <%
+                                assert sections != null;
+                                for (int i = 0; i < sections.size(); i++) {
+                                    String uuid = sections.get(i).getUuidSection();
+                                    String name = sections.get(i).getName();
+                                    if (!uuid.equals(uuidSection)) {
+                            %>
+                            <option value="<%=uuid%>"><%=name%>
+                            </option>
+                            <%
+                                    }
+                                }
+                            %>
+                        </select>
+                        </div>
+                        <input type="hidden" class="form-control" id="author" name="author"
+                               value="<%=resource.getAuthor()%>">
+                        <input type="hidden" id="id_category" name="id_category"
+                               value="<%=resource.getCategory_link()%>">
+                        <input class="form-control" type="hidden" name="desc" id="desc"
+                               value="<%=resource.getDescriptionResource()%>">
+                        <button type="submit" class="btn btn-lg btn-success btn-block" id="btnContactUs">
+                            Добавить
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <p><a href="#myModal1" id="btn1" class="btn btn-primary">Удалить ресурс</a></p>
+    <div id="myModal1" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" style="color: #3A3A3A">Вы действительно хотите удалить?</h4>
+                </div>
+                <div class="modal-body">
+                    <form role="form" method="post" action="/resourceremoving">
+                        <input type="hidden" name="uuidSectionDel" value="<%=uuidSection%>">
+                        <input type="hidden" name="uuidCourseDel" value="<%=uuidCourse%>">
+                        <input type="hidden" name="uuidResourceDel" value="<%=uuidResource%>">
+                        <button type="submit" class="btn btn-lg btn-success btn-block" id="btnContactUs">
+                            Удалить
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <%}%>
 </div>
 <!-- /Intro-->
 
 <!-- Highlights - jumbotron -->
 <div class="jumbotron top-space">
     <div class="container">
-
-        <h3 class="text-center thin">Reasons to use this template</h3>
-
-
+        <%--<div>
+            <form method="post" action="/resourcetransfer">
+                <input type="text" name="uuidNewSection">
+                <input type="hidden" name="uuidCourseTransfer" value="<%=uuidCourse%>">
+                <input type="hidden" name="uuidResource" value="<%=uuidResource%>">
+                <button type="submit"> Перенести</button>
+            </form>
+        </div>--%>
     </div>
 </div>
 <!-- /Highlights -->
-
 <footer id="footer" class="top-space">
     <div class="footer1">
         <div class="container">
@@ -194,5 +318,19 @@
 <script src="/resources/userPages/js/headroom.min.js"></script>
 <script src="/resources/userPages/js/jQuery.headroom.min.js"></script>
 <script src="/resources/userPages/js/hs.js"></script>
+<script>
+    $(function () {
+        $("#btn2").click(function () {
+            $("#myModal2").modal('show');
+        });
+    });
+</script>
+<script>
+    $(function () {
+        $("#btn1").click(function () {
+            $("#myModal1").modal('show');
+        });
+    });
+</script>
 </body>
 </html>

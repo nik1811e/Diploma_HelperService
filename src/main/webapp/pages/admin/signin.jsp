@@ -1,5 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <head>
+    <title>Admin page | Sign In</title>
+
     <link rel="stylesheet" href="/resources/adminPage/css/main.css">
 
 </head>

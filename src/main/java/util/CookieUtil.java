@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import org.apache.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +22,7 @@ public class CookieUtil {
 
         if (cookies != null) {
             for (Cookie c : cookies) {
-                if (c.getName().equals(VariablesUtil.COOKIE_AUTH_NAME)) {
+                if (c.getName().equals(FinalValueUtil.COOKIE_AUTH_NAME)) {
                     token = c.getValue();
                     isFindCookie = true;
                     logger.info(getClass().getName() + " constructor, token: " + token);
@@ -34,24 +35,28 @@ public class CookieUtil {
 
     public boolean isAdmin(Cookie[] cookies) throws UnsupportedEncodingException {
         for (Cookie cooky : cookies) {
-            if ((cooky.getName().equals(VariablesUtil.COOKIE_AUTH_NAME))
-                    && (getRoleFromToken().equalsIgnoreCase(VariablesUtil.ROLE_ADMIN)))
+            if ((cooky.getName().equals(FinalValueUtil.COOKIE_AUTH_NAME))
+                    && (getRoleFromToken().equalsIgnoreCase(FinalValueUtil.ROLE_ADMIN)))
             return true;
         }
         return false;
     }
 
     public String getUserUuidFromToken() throws IOException {
-        Jws<Claims> jws = Jwts.parser()
-                .setSigningKey(VariablesUtil.COOKIE_KEY.getBytes("UTF-8"))
-                .parseClaimsJws(token);
+        if (!StringUtils.isBlank(token)) {
+            Jws<Claims> jws = Jwts.parser()
+                    .setSigningKey(FinalValueUtil.COOKIE_KEY.getBytes("UTF-8"))
+                    .parseClaimsJws(token);
 
-        return String.valueOf(jws.getBody().get("uuid"));
+            return String.valueOf(jws.getBody().get("uuid"));
+        } else {
+            return null;
+        }
     }
 
     private String getRoleFromToken() throws UnsupportedEncodingException {
         Jws<Claims> jws = Jwts.parser()
-                .setSigningKey(VariablesUtil.COOKIE_KEY.getBytes("UTF-8"))
+                .setSigningKey(FinalValueUtil.COOKIE_KEY.getBytes("UTF-8"))
                 .parseClaimsJws(token);
 
         return String.valueOf(jws.getBody().get("role"));

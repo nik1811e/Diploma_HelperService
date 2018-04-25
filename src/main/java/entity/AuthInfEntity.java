@@ -12,6 +12,7 @@ public class AuthInfEntity {
     private String password;
     private String uuid;
     private String role;
+    private String request;
     private Set<CourseEntity> coursesById;
     private Set<CourseEntity> courseAcsById;
     private Set<CourseEntity> coursesFById;
@@ -19,6 +20,8 @@ public class AuthInfEntity {
     private String fName;
     private String lName;
     private String dDay;
+    private String about;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -103,6 +106,16 @@ public class AuthInfEntity {
 
 
     @Basic
+    @Column(name = "about")
+    public String getAbout() {
+        return about;
+    }
+
+    public void setAbout(String about) {
+        this.about = about;
+    }
+
+    @Basic
     @Column(name = "role")
     public String getRole() {
         return role;
@@ -110,6 +123,16 @@ public class AuthInfEntity {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    @Basic
+    @Column(name = "course_request")
+    public String getRequest() {
+        return request;
+    }
+
+    public void setRequest(String request) {
+        this.request = request;
     }
 
     @Override
@@ -125,6 +148,8 @@ public class AuthInfEntity {
         if (password != null ? !password.equals(that.password) : that.password != null) return false;
         if (uuid != null ? !uuid.equals(that.uuid) : that.uuid != null) return false;
         if (role != null ? !role.equals(that.uuid) : that.role != null) return false;
+        if (about != null ? !about.equals(that.uuid) : that.about != null) return false;
+        if (request != null ? !request.equals(that.request) : that.request != null) return false;
 
         return true;
     }
@@ -137,6 +162,8 @@ public class AuthInfEntity {
         result = 31 * result + (password != null ? password.hashCode() : 0);
         result = 31 * result + (uuid != null ? uuid.hashCode() : 0);
         result = 31 * result + (role != null ? role.hashCode() : 0);
+        result = 31 * result + (about != null ? about.hashCode() : 0);
+        result = 31 * result + (request != null ? request.hashCode() : 0);
         return result;
     }
 

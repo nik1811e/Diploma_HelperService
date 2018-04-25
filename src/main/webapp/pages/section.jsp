@@ -1,18 +1,19 @@
 <%--suppress ALL --%>
-<%@ page import="course.ResourceInformation" %>
-<%@ page import="course.to.ResourceTO" %>
+<%@ page import="course.sections.SectionInformation" %>
+<%@ page import="course.resources.ResourceInformation" %>
+<%@ page import="course.pojo.ResourceTO" %>
+<%@ page import="course.pojo.SectionTO" %>
 <%@ page import="entity.ResourceCategoryEntity" %>
-<%@ page import="util.CommonUtil" %>
+<%@ page import="util.MethodUtil" %>
 <%@ page import="util.CookieUtil" %>
 <%@ page import="java.util.List" %>
-<%@ page import="course.to.SectionTO" %>
-<%@ page import="course.SectionInformation" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <html>
 <head>
 
-    <title>Helper service | Main</title>
+    <title>Helper service | Section</title>
 
+    <title>Helper service | Course</title>
     <link rel="shortcut icon" href="/resources/userPages/images/gt_favicon.png">
 
     <link rel="stylesheet" media="screen" href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,700">
@@ -22,7 +23,10 @@
 
     <link rel="stylesheet" href="/resources/userPages/css/bootstrap-theme.css" media="screen">
     <link rel="stylesheet" href="/resources/userPages/css/main.css">
+    <link rel="stylesheet" href="/resources/userPages/css/style1.css">
+    <link rel="stylesheet" href="/resources/userPages/css/style_common.css">
 
+    <link href='http://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'/>
     <script src="/resources/userPages/js/html5shiv.js"></script>
     <script src="/resources/userPages/js/respond.min.js"></script>
 
@@ -33,12 +37,12 @@
         List<ResourceTO> resourceTOList = null;
         List<ResourceCategoryEntity> resourceCategoryList = null;
         String uuidCourse = String.valueOf(request.getParameter("uuidCourse").trim());
-        SectionTO sectionInformation = new SectionInformation().getSectionInformation(uuidCourse,
-                String.valueOf(request.getParameter("uuidSection")).trim());
+        String uuidSection = String.valueOf(request.getParameter("uuidSection")).trim();
+        SectionTO sectionInformation = new SectionInformation().getSectionInformation(uuidCourse, uuidSection);
         if (cookieUtil.isFindCookie()) {
             resourceTOList = new ResourceInformation().getSectionResource(String.valueOf(request.getParameter("uuidSection").trim()),
                     uuidCourse);
-            resourceCategoryList = CommonUtil.getResourceCategory();
+            resourceCategoryList = MethodUtil.getResourceCategory();
         } else {
             response.sendRedirect(urlRedirect);
         }
@@ -59,16 +63,22 @@
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav pull-right">
                 <li><a href="/pages/index.jsp">Главная</a></li>
-                <li><a href="/pages/catalog.jsp">Мои ресурсы</a></li>
+                <li><a href="/pages/catalog.jsp?uuidAuth=<%=cookieUtil.getUserUuidFromToken()%>">Ресурсы</a></li>
                 <li class="dropdown">
                     <a href="/pages/users.jsp" class="dropdown-toggle" data-toggle="dropdown">Пользователи<b
                             class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li><a href="/pages/users.jsp">Список пользователей</a></li>
-                        <li><a href="/pages/followings.jsp">Мои подписки</a></li>
+                        <li><a href="/pages/followings.jsp?uuidAuth=<%=cookieUtil.getUserUuidFromToken()%>">Мои подписки</a></li>
                     </ul>
                 </li>
+                <li><a href="/pages/requests.jsp?uuidAuth=<%=cookieUtil.getUserUuidFromToken()%>">Запросы</a></li>
+
+                <%if(!cookieUtil.isFindCookie()){%>
                 <li><a class="btn" href="/pages/signin.jsp">Авторизация</a></li>
+                <%}else{%>
+                <li><a class="btn" href="/pages/profile.jsp?uuidAuth=<%=cookieUtil.getUserUuidFromToken()%>">Профиль</a></li>
+                <%}%>
             </ul>
         </div><!--/.nav-collapse -->
     </div>
@@ -78,6 +88,8 @@
 <header id="head">
     <div class="container">
         <div class="row">
+            <h1 style="color: #ffffff;">Бесплатный сервис хранения ссылок и закладок!</h1>
+            <%if(cookieUtil.getUserUuidFromToken().equals(request.getParameter("uuidAuth"))){%>
             <p><a href="#myModal2" id="btn2" class="btn btn-primary">Открыть окно добавления ссылки</a></p>
             <div id="myModal2" class="modal fade">
                 <div class="modal-dialog">
@@ -88,8 +100,10 @@
                         </div>
                         <div class="modal-body">
                             <form role="form" method="post" action="/resourcehandler">
-                                <input type="hidden" name="uuid_course" value="<%=request.getParameter("uuidCourse")%>">
-                                <input type="hidden" name="uuid_section"
+                                <input type="hidden" name="uuidAuth" value="<%=request.getParameter("uuidAuth")%>">
+
+                                <input type="hidden" name="uuidCourse" value="<%=request.getParameter("uuidCourse")%>">
+                                <input type="hidden" name="uuidSection"
                                        value="<%=request.getParameter("uuidSection")%>">
                                 <div class="form-group">
                                     <input type="text" class="form-control" id="name_resource" name="name_resource"
@@ -98,7 +112,7 @@
                                 </div>
                                 <div class="form-group">
                                     <input type="url"
-                                           pattern="^(https?://)?([a-zA-Z0-9]([a-zA-ZäöüÄÖÜ0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$"
+                                           pattern="_(^|[\s.:;?\-\]<\(])(https?://[-\w;/?:@&=+$\|\_.!~*\|'()\[\]%#,☺]+[\w/#](\(\))?)(?=$|[\s',\|\(\).:;?\-\[\]>\)])_i"
                                            class="form-control" id="link" name="link" required maxlength="70"
                                            placeholder="Ссылка на ресурс">
                                 </div>
@@ -108,7 +122,7 @@
                                 </div>
                                 <div class="form-group">
                                     <select class="form-control" id="id_category" name="id_category">
-                                        <option value="" disabled>Выберите категорию</option>
+                                        <option value="" disabled selected>Выберите категорию</option>
                                         <%
                                             assert resourceCategoryList != null;
                                             for (int i = 0; i < resourceCategoryList.size(); i++) {
@@ -122,9 +136,8 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label for="desc">Описание</label>
                                     <textarea class="form-control" type="textarea" name="desc" id="desc"
-                                              placeholder="Your Message Here" maxlength="6000" rows="7"></textarea>
+                                              placeholder="Описание" maxlength="6000" rows="7"></textarea>
                                 </div>
                                 <button type="submit" class="btn btn-lg btn-success btn-block" id="btnContactUs">
                                     Добавить
@@ -135,6 +148,7 @@
                     </div>
                 </div>
             </div>
+            <%}%>
         </div>
     </div>
 </header>
@@ -142,9 +156,11 @@
 <div class="container">
     <ol class="breadcrumb">
         <li><a href="index.jsp">Главная</a></li>
-        <li><a href="catalog.jsp">Каталог</a></li>
-        <li><a href="course.jsp?uuidCourse=<%=uuidCourse%>"><%=CommonUtil.getCourseNameByUuid(uuidCourse)%></a></li>
-        <li class="active"><%=sectionInformation.getName()%></li>
+        <li><a href="catalog.jsp?uuidAuth=<%=request.getParameter("uuidAuth")%>">Каталог</a></li>
+        <li><a href="course.jsp?uuidAuth=<%=request.getParameter("uuidAuth")%>&&uuidCourse=<%=uuidCourse%>"><%=MethodUtil.getCourseNameByUuid(uuidCourse)%>
+        </a></li>
+        <li class="active"><%=sectionInformation.getName()%>
+        </li>
     </ol>
     <div class="text-center">
         <br> <br>
@@ -160,26 +176,30 @@
     <div class="container">
         <h3 class="text-center thin">Ресурсы раздела</h3>
         <div class="row">
-            <div class="older">
-                <%
-                    if (!resourceCategoryList.isEmpty()) {
-                        assert resourceTOList != null;
-                        for (ResourceTO aResourceTOList : resourceTOList) {
-                            String uuidResource = aResourceTOList.getUuidResource();
-                            String name = aResourceTOList.getName();
-
-                %>
-                <div>
-                    <a href="/pages/resource.jsp?uuidResource=<%=uuidResource%>"><%=name%>
-                    </a>
+            <%
+                if (!resourceTOList.isEmpty()) {
+                    assert resourceTOList != null;
+                    for (ResourceTO aResourceTOList : resourceTOList) {
+                        String uuidResource = aResourceTOList.getUuidResource();
+                        String name = aResourceTOList.getName();
+            %>
+            <div class="col-md-3 col-sm-6 highlight">
+                <div class="view view-first" style="background-image: url('/resources/userPages/images/courseimg.jpg')">
+                    <%-- <img src="/resources/userPages/images/courseimg.jpg"/>--%>
+                    <span style="color: #999999; font-size: 15px"><%=name%></span>
+                    <div class="mask">
+                        <h2><%=new MethodUtil().getNameResourceCategoryByid(aResourceTOList.getCategory_link())%>
+                        </h2>
+                        <p>
+                          Автор: <%=aResourceTOList.getAuthor()%>
+                        </p>
+                        <a href="/pages/resource.jsp?uuidAuth=<%=request.getParameter("uuidAuth")%>&&uuidCourse=<%=uuidCourse%>&&uuidSection=<%=uuidSection%>&&uuidResource=<%=uuidResource%>" class="info">Открыть раздел</a>
+                    </div>
                 </div>
-                <%
-                    }
-                } else {
-                %>
-                <h2 class="text-center thin">Пусто</h2>
-                <%}%>
             </div>
+            <%}}else {%>
+            <h2 class="text-center thin">Пусто</h2>
+            <%}%>
         </div>
     </div>
 </div>

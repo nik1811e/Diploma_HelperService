@@ -29,7 +29,7 @@ public class TestHibernate {
         System.out.println(session.createSQLQuery("select structure from course where uuid = ' "+ uuidCourse + "' "));
         */
 
-       /* System.out.println("LOL" + ":" + session.createQuery("UPDATE " + VariablesUtil.ENTITY_COURSE + " SET structure = :newBulk WHERE uuid = :uuid")
+       /* System.out.println("LOL" + ":" + session.createQuery("UPDATE " + FinalValueUtil.ENTITY_COURSE + " SET structure = :newBulk WHERE uuid = :uuid")
                 .setParameter("newBulk", "kgkwejwl").setParameter("uuid", "1dfabb2d-5396-4580-a25f-d622f9267efa").executeUpdate() );*/
 
     }

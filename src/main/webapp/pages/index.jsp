@@ -1,4 +1,5 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="util.CookieUtil" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <html>
 <head>
 
@@ -15,7 +16,13 @@
 
     <script src="/resources/userPages/js/html5shiv.js"></script>
     <script src="/resources/userPages/js/respond.min.js"></script>
-
+    <%
+        CookieUtil cookieUtil = new CookieUtil(request);
+        String uuidAuth = "unknown";
+        if (cookieUtil.getUserUuidFromToken() != null) {
+            uuidAuth = cookieUtil.getUserUuidFromToken();
+        }
+    %>
 </head>
 
 <body class="home">
@@ -32,42 +39,51 @@
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav pull-right">
                 <li class="active"><a href="#">Главная</a></li>
-                <li><a href="/pages/catalog.jsp">Мои ресурсы</a></li>
+                <li><a href="/pages/catalog.jsp?uuidAuth=<%=uuidAuth%>">Ресурсы</a></li>
                 <li class="dropdown">
                     <a href="/pages/users.jsp" class="dropdown-toggle" data-toggle="dropdown">Пользователи<b
                             class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li><a href="/pages/users.jsp">Список пользователей</a></li>
-                        <li><a href="/pages/followings.jsp">Мои подписки</a></li>
+                        <li><a href="/pages/followings.jsp?uuidAuth=<%=uuidAuth%>">Мои
+                            подписки</a></li>
                     </ul>
                 </li>
+                <li><a href="/pages/requests.jsp?uuidAuth=<%=cookieUtil.getUserUuidFromToken()%>">Запросы</a></li>
+
+                <%if (!cookieUtil.isFindCookie()) {%>
                 <li><a class="btn" href="/pages/signin.jsp">Авторизация</a></li>
+                <%} else {%>
+                <li><a class="btn" href="/pages/profile.jsp?uuidAuth=<%=uuidAuth%>">Профиль</a>
+                </li>
+                <%}%>
             </ul>
         </div><!--/.nav-collapse -->
     </div>
 </div>
 <!-- /.navbar -->
-
 <!-- Header -->
 <header id="head">
     <div class="container">
         <div class="row">
-
+            <h1 style="color: #ffffff;">Бесплатный сервис хранения ссылок и закладок!</h1>
         </div>
     </div>
 </header>
 <!-- /Header -->
-
 <!-- Intro -->
 <div class="container text-center">
     <br> <br>
     <h2 class="thin">Сервис каталогизации ссылок самообучения</h2>
     <p class="text-muted">
-        #######################################################
+        Веб-сервис информационной поддержки самообучения, позволяющий объединить и сгруппировать учебный материал
+        различных областей в одном месте, создавать курсы и разделы курсов, хранить информацию в виде ссылок,
+        обмениваться ресурсами, тем самым организовать взаимодействие между пользователями. Особенностью данного ресурса
+        является возможность самостоятельно структурировать курс и добавлять ссылки с описанием в определенные разделы
+        курса, что позволяет каждому пользователю упорядочить свои закладки и быстро найти нужный материал.
     </p>
 </div>
 <!-- /Intro-->
-
 <!-- Highlights - jumbotron -->
 <div class="jumbotron top-space">
     <div class="container">
@@ -75,36 +91,36 @@
         <h3 class="text-center thin">Reasons to use this template</h3>
 
         <div class="row">
-            <a href="/pages/catalog.jsp" style="text-decoration: none;color: #000 !important;">
+            <a href="/pages/catalog.jsp?uuidAuth=<%=cookieUtil.getUserUuidFromToken()%>" style="text-decoration: none;color: #000 !important;">
                 <div class="col-md-3 col-sm-6 highlight">
                     <div class="h-caption"><h4><i class="fa fa-cogs fa-5"></i>Мои ресурсы</h4></div>
 
                     <div class="h-body text-center">
-                        <p>############################</p>
+                        <p>Данный раздел хранит список ваших ресурсов</p>
                     </div>
                 </div>
             </a>
-            <a href="#" style="text-decoration: none;color: #000 !important;">
+            <a href="/pages/users.jsp" style="text-decoration: none;color: #000 !important;">
                 <div class="col-md-3 col-sm-6 highlight">
-                    <div class="h-caption"><h4><i class="fa fa-flash fa-5"></i>Fat-free</h4></div>
+                    <div class="h-caption"><h4><i class="fa fa-flash fa-5"></i>Пользователи</h4></div>
                     <div class="h-body text-center">
-                        <p>############################ </p>
+                        <p>Найти друзей</p>
                     </div>
                 </div>
             </a>
-            <a href="/pages/favorite.jsp" style="text-decoration: none; color: #000 !important;">
+            <a href="/pages/requests.jsp?uuidAuth=<%=cookieUtil.getUserUuidFromToken()%>" style="text-decoration: none; color: #000 !important;">
                 <div class="col-md-3 col-sm-6 highlight">
-                    <div class="h-caption"><h4><i class="fa fa-heart fa-5"></i>Избранное</h4></div>
+                    <div class="h-caption"><h4><i class="fa fa-heart fa-5"></i>Запросы</h4></div>
                     <div class="h-body text-center">
-                        <p>############################</p>
+                        <p>Список понравившихся курсов</p>
                     </div>
                 </div>
             </a>
-            <a href="/pages/followings.jsp" style="text-decoration: none;color: #000 !important;">
+            <a href="/pages/followings.jsp?uuidAuth=<%=uuidAuth%>" style="text-decoration: none;color: #000 !important;">
                 <div class="col-md-3 col-sm-6 highlight">
                     <div class="h-caption"><h4><i class="fa fa-smile-o fa-5"></i>Мои подписки</h4></div>
                     <div class="h-body text-center">
-                        <p>############################</p>
+                        <p>Перейти к разделу друзей</p>
                     </div>
                 </div>
             </a>
@@ -113,7 +129,6 @@
     </div>
 </div>
 <!-- /Highlights -->
-
 <footer id="footer" class="top-space">
     <div class="footer1">
         <div class="container">

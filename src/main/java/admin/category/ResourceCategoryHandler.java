@@ -5,10 +5,10 @@ import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
-import util.CommonUtil;
+import util.FinalValueUtil;
+import util.MethodUtil;
 import util.HibernateUtil;
 import util.MailUtil;
-import util.VariablesUtil;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +17,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 public class ResourceCategoryHandler extends HttpServlet implements Serializable {
-    private static final Logger logger = Logger.getLogger(CourseCategoryHandler.class);
+    private static final Logger logger = Logger.getLogger(ResourceCategoryHandler.class);
     private Session session = null;
     private Transaction transaction = null;
     private String errorMessage;
@@ -31,7 +31,7 @@ public class ResourceCategoryHandler extends HttpServlet implements Serializable
             session = HibernateUtil.getSessionFactory().openSession();
             transaction = session.beginTransaction();
             boolean success = addCategoryLink(String.valueOf(name));
-          CommonUtil.showMessage(resp, success, errorMessage,successMessage);
+          MethodUtil.showMessage(resp, success, errorMessage,successMessage);
         } catch (Exception ex) {
             new MailUtil().sendErrorMailForAdmin(getClass().getName() + Arrays.toString(ex.getStackTrace()));
         } finally {
@@ -43,7 +43,7 @@ public class ResourceCategoryHandler extends HttpServlet implements Serializable
 
     private boolean isUniqueCategoryLink(String name) {
         Query query = session.createQuery("SELECT c.id FROM " +
-                VariablesUtil.ENTITY_RESOURCE_CATEGORY + " c WHERE c.name = :name");
+                FinalValueUtil.ENTITY_RESOURCE_CATEGORY + " c WHERE c.name = :name");
         query.setParameter("name", name);
         return query.list().isEmpty();
     }

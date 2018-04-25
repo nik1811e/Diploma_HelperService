@@ -1,6 +1,18 @@
+<%@ page import="util.CookieUtil" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <head>
+    <title>Admin page | Statistic</title>
     <link rel="stylesheet" href="/resources/adminPage/css/main.css">
+    <%
+        CookieUtil cookieUtil = new CookieUtil(request);
+        String urlRedirect = "/pages/admin/signin.jsp";
+        if(cookieUtil.isFindCookie() && cookieUtil.isAdmin(request.getCookies()))
+        {
+
+        }else{
+            response.sendRedirect(urlRedirect);
+        }
+    %>
 </head>
 <body>
 <div id="main-wrapper">
@@ -132,10 +144,10 @@
 
 </div>
 
-<script src="js/jquery.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="js/Chart.min.js"></script>
-<script src="js/templatemo_script.js"></script>
+<script src="/resources/adminPage/js/jquery.min.js"></script>
+<script src="/resources/adminPage/js/js/bootstrap.min.js"></script>
+<script src="/resources/adminPage/js/js/Chart.min.js"></script>
+<script src="/resources/adminPage/js/js/templatemo_script.js"></script>
 <script type="text/javascript">
     // Line chart
     var randomScalingFactor = function(){ return Math.round(Math.random()*100)};

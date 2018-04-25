@@ -1,4 +1,5 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="util.CookieUtil" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <html>
 <head>
 
@@ -19,6 +20,9 @@
     <script src="/resources/userPages/js/html5shiv.js"></script>
     <script src="/resources/userPages/js/respond.min.js"></script>
     <![endif]-->
+    <%
+        CookieUtil cookieUtil = new CookieUtil(request);
+    %>
 </head>
 
 <body>
@@ -35,13 +39,13 @@
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav pull-right">
                 <li class="active"><a href="#">Главная</a></li>
-                <li><a href="/pages/catalog.jsp">Мои ресурсы</a></li>
+                <li><a href="/pages/catalog.jsp?uuidAuth=<%=cookieUtil.getUserUuidFromToken()%>">Ресурсы</a></li>
                 <li class="dropdown">
                     <a href="/pages/users.jsp" class="dropdown-toggle" data-toggle="dropdown">Пользователи<b
                             class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li><a href="/pages/users.jsp">Список пользователей</a></li>
-                        <li><a href="/pages/followings.jsp">Мои подписки</a></li>
+                        <li><a href="/pages/followings.jsp?uuidAuth=<%=cookieUtil.getUserUuidFromToken()%>">Мои подписки</a></li>
                     </ul>
                 </li>
                 <li><a class="btn" href="#">Авторизация</a></li>

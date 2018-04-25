@@ -5,10 +5,10 @@ import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
-import util.CommonUtil;
+import util.FinalValueUtil;
+import util.MethodUtil;
 import util.HibernateUtil;
 import util.MailUtil;
-import util.VariablesUtil;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -32,7 +32,7 @@ public class CourseCategoryHandler extends HttpServlet implements Serializable {
             session = HibernateUtil.getSessionFactory().openSession();
             transaction = session.beginTransaction();
             boolean success = addCourseCategory(String.valueOf(name));
-            CommonUtil.showMessage(resp, success, errorMessage,successMessage);
+            MethodUtil.showMessage(resp, success, errorMessage,successMessage);
         } catch (Exception ex) {
             new MailUtil().sendErrorMailForAdmin(getClass().getName() + Arrays.toString(ex.getStackTrace()));
         } finally {
@@ -44,7 +44,7 @@ public class CourseCategoryHandler extends HttpServlet implements Serializable {
 
     private boolean isUniqueCourseCategory(String name) {
     Query query = session.createQuery("SELECT c.id FROM " +
-                VariablesUtil.ENTITY_COURSE_CATEGORY + " c WHERE c.name = :name");
+                FinalValueUtil.ENTITY_COURSE_CATEGORY + " c WHERE c.name = :name");
         query.setParameter("name", name);
         return query.list().isEmpty();
     }
