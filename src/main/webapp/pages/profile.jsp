@@ -1,44 +1,67 @@
 <%--suppress ALL --%>
-<html>
-<head>
-    <title> Profile</title>
-</head>
-<body>
-<%--suppress ALL --%>
 <%@ page import="entity.AuthInfEntity" %>
 <%@ page import="util.CookieUtil" %>
 <%@ page import="util.MailUtil" %>
 <%@ page import="util.MethodUtil" %>
 <%@ page import="java.util.Arrays" %>
 <%@ page import="java.util.List" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
+    <meta charset="utf-8"/>
+    <title>Helper Service | Profile</title>
 
-    <title>Helper service | Resource</title>
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" media="all" href="/resources/css/style.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <!-- Adding "maximum-scale=1" fixes the Mobile Safari auto-zoom bug: http://filamentgroup.com/examples/iosScaleBug/ -->
+    <!-- JS -->
+    <script src="/resources/js/jquery-1.6.4.min.js"></script>
+    <script src="/resources/js/css3-mediaqueries.js"></script>
+    <script src="/resources/js/custom.js"></script>
+    <script src="/resources/js/tabs.js"></script>
+    <!-- Tweet -->
+    <link rel="stylesheet" href="/resources/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/resources/css/bootstrap-theme.css" media="screen">
+    <link rel="stylesheet" href="/resources/css/jquery.tweet.css" media="all"/>
+    <script src="/resources/js/tweet/jquery.tweet.js"></script>
+    <!-- ENDS Tweet -->
+    <!-- superfish -->
+    <link rel="stylesheet" media="screen" href="/resources/css/superfish.css"/>
+    <script src="/resources/js/superfish-1.4.8/js/hoverIntent.js"></script>
+    <script src="/resources/js/superfish-1.4.8/js/superfish.js"></script>
+    <script src="/resources/js/superfish-1.4.8/js/supersubs.js"></script>
+    <!-- ENDS superfish -->
+    <!-- prettyPhoto -->
+    <script src="/resources/js/prettyPhoto/js/jquery.prettyPhoto.js"></script>
+    <link rel="stylesheet" href="js/prettyPhoto/css/prettyPhoto.css" media="screen"/>
+    <!-- ENDS prettyPhoto -->
+    <!-- poshytip -->
+    <link rel="stylesheet" href="/resources/js/poshytip-1.1/src/tip-twitter/tip-twitter.css"/>
+    <link rel="stylesheet" href="/resources/js/poshytip-1.1/src/tip-yellowsimple/tip-yellowsimple.css"/>
+    <script src="/resources/js/poshytip-1.1/src/jquery.poshytip.min.js"></script>
+    <!-- ENDS poshytip -->
+    <!-- GOOGLE FONTS -->
+    <link href='http://fonts.googleapis.com/css?family=Arvo:400,700' rel='stylesheet' type='text/css'>
+    <!-- Flex Slider -->
+    <link rel="stylesheet" href="/resources/css/flexslider.css">
+    <script src="/resources/js/jquery.flexslider-min.js"></script>
+    <!-- ENDS Flex Slider -->
+    <!-- Masonry -->
+    <script src="/resources/js/masonry.min.js"></script>
+    <script src="/resources/js/imagesloaded.js"></script>
+    <!-- ENDS Masonry -->
+    <!-- Less framework -->
+    <link rel="stylesheet" media="all" href="/resources/css/lessframework.css"/>
+    <!-- modernizr -->
+    <script src="/resources/js/modernizr.js"></script>
+    <!-- SKIN -->
+    <link rel="stylesheet" media="all" href="/resources/css/skin.css"/>
+    <link rel="stylesheet" media="all" href="/resources/css/modal.css"/>
+    <link href="/resources/css/paper.css" rel="stylesheet"/>
 
-    <link rel="shortcut icon" href="/resources/userPages/images/gt_favicon.png">
-
-    <link rel="stylesheet" media="screen" href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,700">
-    <link rel="stylesheet" href="/resources/userPages/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/resources/userPages/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/resources/userPages/css/list.css">
-
-    <link rel="stylesheet" href="/resources/userPages/css/bootstrap-theme.css" media="screen">
-    <link rel="stylesheet" href="/resources/userPages/css/main.css">
-
-    <script src="/resources/userPages/js/html5shiv.js"></script>
-    <script src="/resources/userPages/js/respond.min.js"></script>
-
-    <link href="/resources/userPages/css/paper.css" rel="stylesheet"/>
-    <link href="/resources/userPages/css/animate.min.css" rel="stylesheet"/>
-
-    <!--  CSS for Demo Purpose, don't include it in your project     -->
-    <link href="/resources/userPages/css/main_form.css" rel="stylesheet"/>
-
-    <!--  Fonts and icons     -->
-    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
-    <link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
     <%
         CookieUtil cookieUtil = new CookieUtil(request);
         String myUuid = cookieUtil.getUserUuidFromToken();
@@ -63,72 +86,62 @@
 
 </head>
 
-<body class="home">
-<!-- Fixed navbar -->
-<div class="navbar navbar-inverse navbar-fixed-top headroom">
-    <div class="container">
-        <div class="navbar-header">
-            <!-- Button for smallest screens -->
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"><span
-                    class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span></button>
-            <a class="navbar-brand" href="/pages/index.jsp"><img src="/resources/userPages/images/logo.png"
-                                                                 alt="Helper Service Logo"></a>
-        </div>
-        <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav pull-right">
-                <li class="active"><a href="/pages/index.jsp">Главная</a></li>
-                <li><a href="/pages/catalog.jsp?uuidAuth=<%=cookieUtil.getUserUuidFromToken()%>">Ресурсы</a></li>
-                <li class="dropdown">
-                    <a href="/pages/users.jsp" class="dropdown-toggle" data-toggle="dropdown">Пользователи<b
-                            class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="/pages/users.jsp">Список пользователей</a></li>
-                        <li><a href="/pages/followings.jsp?uuidAuth=<%=cookieUtil.getUserUuidFromToken()%>">Мои подписки</a></li>
-                    </ul>
-                <li><a href="/pages/requests.jsp?uuidAuth=<%=cookieUtil.getUserUuidFromToken()%>">Запросы</a></li>
-                </li>
-                <%if (!cookieUtil.isFindCookie()) {%>
-                <li><a class="btn" href="#">Авторизация</a></li>
-                <%} else {%>
-                <li><a class="btn" href="/pages/profile.jsp?uuidAuth=<%=cookieUtil.getUserUuidFromToken()%>">Профиль</a>
-                </li>
-                <%}%>
-            </ul>
-        </div><!--/.nav-collapse -->
-    </div>
-</div>
-<!-- /.navbar -->
+<body>
 
-<!-- Header -->
-<header id="head">
-    <div class="container">
-        <div class="row">
-            <h2 style="color: #ffffff;">Добро пожаловать,<%=authInfEntityList.get(0).getFName()%>
-            </h2>
+<header>
+    <div class="wrapper clearfix">
+        <div id="logo">
+            <a href="/pages/index.jsp"><img src="/resources/img/l.png" alt="Helper Service"></a>
         </div>
+
+        <!-- nav -->
+        <ul id="nav" class="sf-menu sf-js-enabled sf-shadow">
+            <li><a href="#" style="text-decoration: none">ГЛАВНАЯ</a></li>
+            <li><a href="#" style="text-decoration: none">КАТАЛОГ РЕСУРСОВ</a>
+                <ul>
+                    <li><a href="/pages/catalog.jsp?uuidAuth=<%=cookieUtil.getUserUuidFromToken()%>"
+                           style="text-decoration: none">Мои
+                        ресурсы</a></li>
+                    <li><a href="" style="text-decoration: none">Избранное</a></li>
+                </ul>
+            </li>
+            <li><a href="#" style="text-decoration: none">ПОЛЬЗОВАТЕЛИ</a>
+                <ul>
+                    <li><a href="/pages/users.jsp" style="text-decoration: none">Список пользователей</a></li>
+                    <li><a href="/pages/following.jsp?uuidAuth=<%=cookieUtil.getUserUuidFromToken()%>" style="text-decoration: none">Подписки</a></li>
+                    <li><a href="/pages/follower.jsp?uuidAuth=<%=cookieUtil.getUserUuidFromToken()%>" style="text-decoration: none">Подпищики</a></li>
+                </ul>
+            </li>
+            <%if (!cookieUtil.isFindCookie()) {%>
+            <li><a href="/pages/signin.jsp" style="text-decoration: none">АВТОРИЗАЦИЯ</a></li>
+            <%} else {%>
+            <li  class="current-menu-item"><a href="/pages/profile.jsp?uuidAuth=<%=cookieUtil.getUserUuidFromToken()%>"
+                   style="text-decoration: none">ПРОФИЛЬ</a></li>
+            <%}%>
+        </ul>
     </div>
 </header>
-<!-- /Header -->
 
-<!-- Intro -->
-<div class="container">
-    <ol class="breadcrumb">
-        <li><a href="index.jsp">Главная</a></li>
-        <li class="active"><a href="#">Профиль</a></li>
-    </ol>
-    <br><br>
-    <div class="text-center">
-        <div class="content">
-            <div class="container-fluid">
-                <div class="row">
+<!-- MAIN -->
+<div id="main">
+    <div class="wrapper clearfix" style="height:95vh; width: 60%">
+
+        <!-- masthead -->
+        <div class="masthead clearfix">
+            <h1>Ваши запросы</h1><span class="subheading">In Photography, Recent work</span>
+        </div>
+        <!-- posts list -->
+        <div class="row" style="margin: 0" >
+            <div class="home-add clearfix" style="padding-top: 90px">
+                <div class="post-heading">
                     <div class="col-lg-4 col-md-5">
                         <div class="card card-user">
                             <div class="image">
-                                <img src="/resources/userPages/images/background.jpg" alt="..."/>
+                                <img src="/resources/img/background.jpg" alt="..."/>
                             </div>
                             <div class="content">
                                 <div class="author">
-                                    <img class="avatar border-white" src="/resources/userPages/images/avatar.png"
+                                    <img class="avatar border-white" src="/resources/img/avatar.png"
                                          alt="..."/>
                                     <h4 class="title"><%=authInfEntityList.get(0).getFName()%> <%=authInfEntityList.get(0).getLName()%>
                                         <br/>
@@ -145,7 +158,7 @@
                                            value="<%=cookieUtil.getUserUuidFromToken()%>">
                                     <input type="hidden" name="uuidFollowing"
                                            value="<%=authInfEntityList.get(0).getUuid()%>">
-                                    <input type="submit" class="btn btn-info btn-fill btn-wd"
+                                    <input type="submit" class="btn-modal"
                                            value="<%=fbutton_text%>">
                                 </form>
                                 <%}%>
@@ -154,13 +167,27 @@
                             <div class="text-center">
                                 <div class="row">
                                     <div class="col-md-3 col-md-offset-1">
-                                        <h5><small><a href="/pages/catalog.jsp?uuidAuth=<%=request.getParameter("uuidAuth")%>"style="text-decoration: none; color: #999999">Курсы</a></small></h5>
+                                        <h5>
+                                            <small><a
+                                                    href="/pages/catalog.jsp?uuidAuth=<%=request.getParameter("uuidAuth")%>"
+                                                    style="text-decoration: none; color: #999999; font-size: 11px">Курсы</a></small>
+                                        </h5>
                                     </div>
                                     <div class="col-md-4">
-                                        <h5><small><a href="/pages/followings.jsp?uuidAuth=<%=request.getParameter("uuidAuth")%>" style="text-decoration: none; color: #999999">Подписки</a></small></h5>
+                                        <h5>
+                                            <small><a
+                                                    href="/pages/following.jsp?uuidAuth=<%=request.getParameter("uuidAuth")%>"
+                                                    style="text-decoration: none; color: #999999; font-size: 11px">Подписки</a>
+                                            </small>
+                                        </h5>
                                     </div>
                                     <div class="col-md-3">
-                                        <h5><small><a href="/pages/followers.jsp?uuidAuth=<%=request.getParameter("uuidAuth")%>"style="text-decoration: none; color: #999999">Подпищики</a></small></h5>
+                                        <h5>
+                                            <small><a
+                                                    href="/pages/follower.jsp?uuidAuth=<%=request.getParameter("uuidAuth")%>"
+                                                    style="text-decoration: none; color: #999999; font-size: 11px">Подпищики</a>
+                                            </small>
+                                        </h5>
                                     </div>
                                 </div>
                             </div>
@@ -174,7 +201,8 @@
                             <div class="content">
                                 <form method="post" action="/editprofile">
                                     <input type="hidden" name="uuid" value="<%=cookieUtil.getUserUuidFromToken()%>">
-                                    <input type="hidden" name="bday" value="<%=authInfEntityList.get(0).getBDay()%>">
+                                    <input type="hidden" name="bday"
+                                           value="<%=authInfEntityList.get(0).getBDay()%>">
                                     <input type="hidden" name="statusO"
                                            value="<%=authInfEntityList.get(0).getRole() %>">
                                     <input type="hidden" name="dateReg"
@@ -191,8 +219,10 @@
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <label>Логин</label>
-                                                <input type="text" class="form-control border-input" placeholder="login"
-                                                       value="<%=authInfEntityList.get(0).getLogin()%>" name="login">
+                                                <input type="text" class="form-control border-input"
+                                                       placeholder="login"
+                                                       value="<%=authInfEntityList.get(0).getLogin()%>"
+                                                       name="login">
                                             </div>
                                         </div>
                                         <div class="col-md-4">
@@ -211,7 +241,8 @@
                                                 <label>Имя</label>
                                                 <input type="text" class="form-control border-input"
                                                        placeholder="First name"
-                                                       value="<%=authInfEntityList.get(0).getFName()%>" name="fname">
+                                                       value="<%=authInfEntityList.get(0).getFName()%>"
+                                                       name="fname">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
@@ -219,7 +250,8 @@
                                                 <label>Фамилия</label>
                                                 <input type="text" class="form-control border-input"
                                                        placeholder="Last Name"
-                                                       value="<%=authInfEntityList.get(0).getLName()%>" name="lname">
+                                                       value="<%=authInfEntityList.get(0).getLName()%>"
+                                                       name="lname">
                                             </div>
                                         </div>
                                     </div>
@@ -245,7 +277,7 @@
                                     </div>
                                     <div class="text-center">
                                         <%if (authInfEntityList.get(0).getUuid().equals(cookieUtil.getUserUuidFromToken())) {%>
-                                        <button type="submit" class="btn btn-info btn-fill btn-wd">Update Profile
+                                        <button type="submit" class="btn-modal">Update Profile
                                         </button>
                                         <%}%>
                                     </div>
@@ -254,95 +286,100 @@
                             </div>
                         </div>
                     </div>
-
-
                 </div>
+
+                <div id="fold"></div>
             </div>
         </div>
-    </div>
-</div>
-<!-- /Intro-->
-
-<!-- Highlights - jumbotron -->
-<div class="jumbotron top-space">
-    <div class="container">
 
     </div>
 </div>
-<!-- /Highlights -->
-<footer id="footer" class="top-space">
-    <div class="footer1">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-3 widget">
-                    <h3 class="widget-title">Контакты</h3>
-                    <div class="widget-body">
-                        <p>
-                            <a href="mailto:service.helper.eng@gmail.com">service.helper.eng@gmail.com</a><br>
+<!-- ENDS MAIN -->
 
-                        </p>
+
+<footer>
+
+    <div class="wrapper clearfix">
+
+        <!-- widgets -->
+        <ul class="widget-cols clearfix">
+            <li class="first-col">
+
+                <div class="widget-block">
+                    <h4>RECENT POSTS</h4>
+                    <div class="recent-post clearfix">
+                        <a href="#" class="thumb"><img src="img/dummies/54x54.gif" alt="Post"/></a>
+                        <div class="post-head">
+                            <a href="#">Pellentesque habitant morbi senectus</a><span> March 12, 2011</span>
+                        </div>
+                    </div>
+                    <div class="recent-post clearfix">
+                        <a href="#" class="thumb"><img src="img/dummies/54x54.gif" alt="Post"/></a>
+                        <div class="post-head">
+                            <a href="#">Pellentesque habitant morbi senectus</a><span> March 12, 2011</span>
+                        </div>
+                    </div>
+                    <div class="recent-post clearfix">
+                        <a href="#" class="thumb"><img src="img/dummies/54x54.gif" alt="Post"/></a>
+                        <div class="post-head">
+                            <a href="#">Pellentesque habitant morbi senectus</a><span> March 12, 2011</span>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-3 widget">
+            </li>
+
+            <li class="second-col">
+
+                <div class="widget-block">
+                    <h4>FREE TEMPLATES &amp; THEMES</h4>
+                    <p>Visit <a href="http://templatecreme.com/">Template Creme</a> and browse the selection of
+                        well-made FREE Templates and WordPress Themes.</p>
                 </div>
-                <div class="col-md-6 widget">
-                    <h3 class="widget-title">Text widget</h3>
-                    <div class="widget-body">
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Excepturi, dolores, quibusdam
-                            architecto voluptatem amet fugiat nesciunt placeat provident cumque accusamus itaque
-                            voluptate modi quidem dolore optio velit hic iusto vero praesentium repellat commodi ad id
-                            expedita cupiditate repellendus possimus unde?</p>
-                        <p>Eius consequatur nihil quibusdam! Laborum, rerum, quis, inventore ipsa autem repellat
-                            provident assumenda labore soluta minima alias temporibus facere distinctio quas adipisci
-                            nam sunt explicabo officia tenetur at ea quos doloribus dolorum voluptate reprehenderit
-                            architecto sint libero illo et hic.</p>
+
+            </li>
+
+            <li class="third-col">
+
+                <div class="widget-block">
+                    <div id="tweets" class="footer-col tweet">
+                        <h4>TWITTER WIDGET</h4>
                     </div>
                 </div>
 
-            </div> <!-- /row of widgets -->
+            </li>
+
+            <li class="fourth-col">
+
+                <div class="widget-block">
+                    <h4>FREE TEMPLATES &amp; THEMES</h4>
+                    <p>Visit <a href="http://templatecreme.com/">Template Creme</a> and browse the selection of
+                        well-made FREE Templates and WordPress Themes.</p>
+                </div>
+
+            </li>
+        </ul>
+        <!-- ENDS widgets -->
+
+
+        <!-- bottom -->
+        <div class="footer-bottom">
+            <div class="left">Simpler Template by <a href="http://www.luiszuno.com">luiszuno.com</a></div>
+            <div class="right">
+                <ul id="social-bar">
+                    <li><a href="http://www.facebook.com" title="Become a fan" class="poshytip"><img
+                            src="img/social/facebook.png" alt="Facebook"/></a></li>
+                    <li><a href="http://www.twitter.com" title="Follow my tweets" class="poshytip"><img
+                            src="img/social/twitter.png" alt="twitter"/></a></li>
+                    <li><a href="http://www.google.com" title="Add to the circle" class="poshytip"><img
+                            src="img/social/plus.png" alt="Google plus"/></a></li>
+                </ul>
+            </div>
         </div>
+        <!-- ENDS bottom -->
+
     </div>
-
-    <div class="footer2">
-        <div class="container">
-            <div class="row">
-
-                <div class="col-md-6 widget">
-                    <div class="widget-body">
-                        <p class="simplenav">
-                            <a href="#">Home</a> |
-                            <b><a href="signup.jsp">Sign up</a></b>
-                        </p>
-                    </div>
-                </div>
-
-                <div class="col-md-6 widget">
-                    <div class="widget-body">
-                        <p class="text-right">
-                            Copyright &copy; 2018, Developed by <a href="https://vk.com/xxxnikgtxxx" rel="developer">Eliseenko
-                            Nikita</a>
-                        </p>
-                    </div>
-                </div>
-
-            </div> <!-- /row of widgets -->
-        </div>
-    </div>
-
 </footer>
 
-<!-- JavaScript libs are placed at the end of the document so the pages load faster -->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-<script src="/resources/userPages/js/headroom.min.js"></script>
-<script src="/resources/userPages/js/jQuery.headroom.min.js"></script>
-<script src="/resources/userPages/js/hs.js"></script>
-<script src="/resources/userPages/js/paper.js"></script>
-<script src="/resources/userPages/js/form_main.js"></script>
-
-
-</body>
-</html>
 
 </body>
 </html>
